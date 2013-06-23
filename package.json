@@ -31,7 +31,9 @@
   },
   "dependencies": {
     "ltx": "*",
-    "xmpp-ftw-item-parser": "*"
+    "xmpp-ftw-item-parser": "*",
+    "xmpp-ftw-pubsub": "*",
+    "xmpp-ftw-disco": "*"
   },
   "devDependencies": {
     "mocha": "~1.8.1",
