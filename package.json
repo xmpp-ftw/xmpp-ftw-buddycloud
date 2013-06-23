@@ -33,7 +33,8 @@
     "ltx": "*",
     "xmpp-ftw-item-parser": "*",
     "xmpp-ftw-pubsub": "*",
-    "xmpp-ftw-disco": "*"
+    "xmpp-ftw-disco": "*",
+    "async": "~0.2.9"
   },
   "devDependencies": {
     "mocha": "~1.8.1",
