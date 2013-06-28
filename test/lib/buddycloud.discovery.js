@@ -116,7 +116,9 @@ describe('buddycloud', function() {
                 xmpp.on('stanza', function(stanza) {
                     ++discoInfoRequests
                     if (1 === discoInfoRequests) 
-                        return manager.makeCallback(helper.getStanza('disco-info'))
+                        return manager.makeCallback(
+                            helper.getStanza('disco-info')
+                        )
                     manager.makeCallback(
                         helper.getStanza('disco-info-buddycloud')
                     )
