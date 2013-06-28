@@ -25,6 +25,10 @@ describe('buddycloud', function() {
         buddycloud.init(manager)
     })
 
+    afterEach(function() {
+        xmpp.removeAllListeners('stanza')
+    })
+
     describe('Channel server discover', function() {
 
         it('Sends out expected disco#items stanzas', function(done) {
@@ -40,6 +44,91 @@ describe('buddycloud', function() {
             socket.emit('xmpp.buddycloud.discover')
         })
 
+        it('Tracks and can handle an error response', function(done) {
+            xmpp.once('stanza', function(stanza) {
+                var errorResponse = helper.getStanza('iq-error')
+                errorResponse.attrs.id = stanza.attrs.id
+                manager.makeCallback(errorResponse)
+            })
+            socket.emit('xmpp.buddycloud.discover', {}, function(error, items) {
+                should.not.exist(items)
+                error.type.should.equal('cancel')
+                error.condition.should.equal('error-condition')
+                done()
+            })
+        })
 
+        it('Handles disco#items and sends expected stanzas', function(done) {
+            xmpp.once('stanza', function(stanza) {
+                var discoInfoRequests = 0
+                xmpp.on('stanza', function(stanza) {
+                    stanza.is('iq').should.be.true
+                    stanza.attrs.to.should.include('example.com')
+                    stanza.attrs.type.should.equal('get')
+                    stanza.attrs.id.should.exist
+                    stanza.getChild('query', buddycloud.disco.NS_INFO)
+                        .should.exist
+                    ++discoInfoRequests
+                    if (discoInfoRequests >= 2) done()
+                })
+                manager.makeCallback(helper.getStanza('disco-items'))
+            })
+            socket.emit('xmpp.buddycloud.discover')
+        })
+
+        it('Handles error responses; returns failure', function(done) {
+            xmpp.once('stanza', function(stanza) {
+                var discoInfoRequests = 0
+                xmpp.on('stanza', function(stanza) {
+                    var errorReply = helper.getStanza('iq-error')
+                    errorReply.attrs.id = stanza.attrs.id 
+                    manager.makeCallback(errorReply)
+                })
+                manager.makeCallback(helper.getStanza('disco-items'))
+            })
+            socket.emit('xmpp.buddycloud.discover', {}, function(error, item) {
+                should.not.exist(item)
+                error.should.equal('No buddycloud server found')
+                done()
+            })
+        })
+
+        it('Handles disco#info responses; returns failure', function(done) {
+            xmpp.once('stanza', function(stanza) {
+                xmpp.on('stanza', function(stanza) {
+                    var infoReply = helper.getStanza('disco-info')
+                    infoReply.attrs.id = stanza.attrs.id
+                    manager.makeCallback(infoReply)
+                })
+                manager.makeCallback(helper.getStanza('disco-items'))
+            })
+            socket.emit('xmpp.buddycloud.discover', {}, function(error, item) {
+                should.not.exist(item)
+                error.should.equal('No buddycloud server found')
+                done()
+            })
+        })
+
+    
+        it('Handles disco#info responses; returns failure', function(done) {
+            xmpp.once('stanza', function(stanza) {
+                var discoInfoRequests = 0
+                xmpp.on('stanza', function(stanza) {
+                    ++discoInfoRequests
+                    if (1 === discoInfoRequests) 
+                        return manager.makeCallback(helper.getStanza('disco-info'))
+                    manager.makeCallback(
+                        helper.getStanza('disco-info-buddycloud')
+                    )
+                })
+                manager.makeCallback(helper.getStanza('disco-items'))
+            })
+            socket.emit('xmpp.buddycloud.discover', {}, function(error, item) {
+                should.not.exist(error)
+                item.should.equal('channels.example.com')
+                buddycloud.channelServer.should.equal('channels.example.com')
+                done()
+            })
+        })
     })
 })

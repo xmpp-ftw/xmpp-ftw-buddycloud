@@ -1,0 +1,11 @@
+<iq type='result'
+    from='example.com'
+    to='romeo@example.com/orchard'
+    id='1'>
+  <query xmlns='http://jabber.org/protocol/disco#items'>
+    <item jid='muc.example.com'
+          name='name1'/>
+    <item jid='channels.example.com'
+          name='name2' />
+  </query>
+</iq>
