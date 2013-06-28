@@ -27,6 +27,7 @@ describe('buddycloud', function() {
 
     afterEach(function() {
         xmpp.removeAllListeners('stanza')
+        buddycloud.channelServer = 'channels.example.com'
     })
 
     describe('Presence', function() {
@@ -41,9 +42,22 @@ describe('buddycloud', function() {
                 })
                 done()
             })
+            delete buddycloud.channelServer
             socket.emit('xmpp.buddycloud.presence')
         })
-  
+ 
+        it('Sends expected stanza', function(done) {
+            xmpp.once('stanza', function(stanza) {
+                stanza.is('presence').should.be.true
+                stanza.attrs.to.should.equal(buddycloud.channelServer)
+                stanza.getChildText('status').should.equal('buddycloud')
+                stanza.getChildText('priority').should.equal('-1')
+                stanza.getChildText('show').should.equal('online')
+                done()
+            })
+            socket.emit('xmpp.buddycloud.presence')
+        })
+
     })
 
 })
