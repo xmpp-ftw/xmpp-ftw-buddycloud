@@ -31,6 +31,36 @@ describe('buddycloud', function() {
 
     describe('Channel server discover', function() {
 
+         it('Errors when no callback provided', function(done) {
+            xmpp.once('stanza', function() {
+                done('Unexpected outgoing stanza')
+            })
+            socket.once('xmpp.error.client', function(error) {
+                error.type.should.equal('modify')
+                error.condition.should.equal('client-error')
+                error.description.should.equal("Missing callback")
+                error.request.should.eql({})
+                xmpp.removeAllListeners('stanza')
+                done()
+            })
+            socket.emit('xmpp.buddycloud.discover', {})
+        })
+
+        it('Errors when non-function callback provided', function(done) {
+            xmpp.once('stanza', function() {
+                done('Unexpected outgoing stanza')
+            })
+            socket.once('xmpp.error.client', function(error) {
+                error.type.should.equal('modify')
+                error.condition.should.equal('client-error')
+                error.description.should.equal("Missing callback")
+                error.request.should.eql({})
+                xmpp.removeAllListeners('stanza')
+                done()
+            })
+            socket.emit('xmpp.buddycloud.discover', {}, true)
+        })
+
         it('Sends out expected disco#items stanzas', function(done) {
             xmpp.once('stanza', function(stanza) {
                 stanza.is('iq').should.be.true
@@ -41,7 +71,7 @@ describe('buddycloud', function() {
                     .should.exist
                 done()
             })
-            socket.emit('xmpp.buddycloud.discover')
+            socket.emit('xmpp.buddycloud.discover', null, function() {})
         })
 
         it('Tracks and can handle an error response', function(done) {
@@ -73,7 +103,7 @@ describe('buddycloud', function() {
                 })
                 manager.makeCallback(helper.getStanza('disco-items'))
             })
-            socket.emit('xmpp.buddycloud.discover')
+            socket.emit('xmpp.buddycloud.discover', null, function() {})
         })
 
         it('Handles error responses; returns failure', function(done) {
