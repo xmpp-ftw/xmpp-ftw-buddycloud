@@ -277,4 +277,177 @@ describe('buddycloud', function() {
 
     })
 
+    describe('Item replies', function() {
+
+        it('Errors if buddycloud server not discovered', function(done) {
+            delete buddycloud.channelServer
+            var callback = function(error, data) {
+                should.not.exist(data)
+                error.should.eql({
+                    type: 'modify',
+                    condition: 'client-error',
+                    description: 'You must perform discovery first!',
+                    request: {}
+                })
+                done()
+            }
+            socket.emit('xmpp.buddycloud.items.replies', {}, callback)
+        })
+
+        it('Errors if no \'node\' provided', function(done) {
+            var request = {}
+            xmpp.once('stanza', function() {
+                done('Unexpected outgoing stanza')
+            })
+            var callback = function(error, success) {
+                should.not.exist(success)
+                error.type.should.equal('modify')
+                error.condition.should.equal('client-error')
+                error.description.should.equal("Missing 'node' key")
+                error.request.should.eql(request)
+                xmpp.removeAllListeners('stanza')
+                done()
+            }
+            socket.emit(
+                'xmpp.buddycloud.items.replies',
+                request,
+                callback
+            )
+        })
+
+        it('Errors if no \'id\' key provided', function(done) {
+            var request = { node: '/users/romeo@example.com/posts' }
+            xmpp.once('stanza', function() {
+                done('Unexpected outgoing stanza')
+            })
+            var callback = function(error, success) {
+                should.not.exist(success)
+                error.type.should.equal('modify')
+                error.condition.should.equal('client-error')
+                error.description.should.equal("Missing 'id' key")
+                error.request.should.eql(request)
+                xmpp.removeAllListeners('stanza')
+                done()
+            }
+            socket.emit(
+                'xmpp.buddycloud.items.replies',
+                request,
+                callback
+            )
+        })
+
+        it('Sends expected stanza', function(done) {
+            var request = {
+                node: '/user/romeo@example.com/posts',
+                id: '1234'
+            }
+            xmpp.once('stanza', function(stanza) {
+                stanza.is('iq').should.be.true
+                stanza.attrs.to.should.equal(buddycloud.channelServer)
+                stanza.attrs.id.should.exist
+                var pubsub = stanza.getChild('pubsub', buddycloud.NS_PUBSUB)
+                pubsub.should.exist
+                var replies = pubsub
+                    .getChild('replies', buddycloud.NS_BUDDYCLOUD)
+                replies.should.exist
+                replies.attrs.node
+                    .should.equal(request.node)
+                replies.attrs.item_id.should.equal(request.id)
+                done()
+            })
+            socket.emit('xmpp.buddycloud.items.replies', request)
+        })
+   
+        it('Sends expected stanza with RSM applied', function(done) {
+            var request = {
+                node: '/user/romeo@example.com/posts',
+                id: '1234',
+                rsm: {
+                    max: '20',
+                    before: true
+                }
+            }
+            xmpp.once('stanza', function(stanza) {
+                var set = stanza.getChild('pubsub').getChild('set', RSM_NS)
+                set.should.exist
+                set.getChildText('max').should.equal(request.rsm.max)
+                set.getChild('before').should.exist               
+                done()
+            })
+            socket.emit('xmpp.buddycloud.items.replies', request)
+        })
+
+        it('Handles an error reply', function(done) {
+            xmpp.once('stanza', function(stanza) {
+                manager.makeCallback(helper.getStanza('iq-error'))
+            })
+            var callback = function(error, success) {
+                should.not.exist(success)
+                error.should.eql({
+                    type: 'cancel',
+                    condition: 'error-condition'
+                })
+                done()
+            }
+            var request = {
+                node: '/user/romeo@example.com/post',
+                id: '1234'
+            }
+            socket.emit(
+                'xmpp.buddycloud.items.replies',
+                request,
+                callback
+            )
+        })
+
+        it('Returns data in expected format', function(done) {
+            xmpp.once('stanza', function(stanza) {
+                manager.makeCallback(helper.getStanza('item-replies'))
+            })
+            var callback = function(error, success) {
+                should.not.exist(error)
+                success.length.should.equal(2)
+                success[0].id.should.equal('item-1')
+                success[0].entry.should.eql({ body: 'item-1-content' })
+                success[1].id.should.equal('item-2')
+                success[1].entry.should.eql({ body: 'item-2-content' })
+                done()
+            }
+            var request = {
+                node: '/user/romeo@example.com/post',
+                id: '1234'
+            }
+            socket.emit(
+                'xmpp.buddycloud.items.replies',
+                request,
+                callback
+            )
+        })
+
+        it('Returns RSM element', function(done) {
+            xmpp.once('stanza', function(stanza) {
+                manager.makeCallback(helper.getStanza('item-replies-rsm'))
+            })
+            var callback = function(error, success, rsm) {
+                should.not.exist(error)
+                rsm.should.eql({
+                    count: 20,
+                    first: 'item-1',
+                    last: 'item-10'
+                })
+                done()
+            }
+            var request = {
+                node: '/user/romeo@example.com/post',
+                id: '1234'
+            }
+            socket.emit(
+                'xmpp.buddycloud.items.replies',
+                request,
+                callback
+            )
+        })
+
+    })
+
 })
