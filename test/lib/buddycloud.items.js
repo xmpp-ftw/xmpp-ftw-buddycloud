@@ -70,7 +70,7 @@ describe('buddycloud', function() {
                     .should.equal(request.content.atom.content)
                 done()
             })
-            socket.emit('xmpp.buddycloud.publish', request)
+            socket.emit('xmpp.buddycloud.publish', request, function() {})
         })
 
     })
@@ -107,7 +107,7 @@ describe('buddycloud', function() {
                 recentItems.attrs.since.should.equal('2000-01-01T00:00:00.000Z')
                 done()
             })
-            socket.emit('xmpp.buddycloud.items.recent', {})
+            socket.emit('xmpp.buddycloud.items.recent', {}, function() {})
         })
 
         it('Errors when date is unparsable', function(done) {
@@ -140,7 +140,7 @@ describe('buddycloud', function() {
                 recentItems.attrs.max.should.equal(request.max)
                 done()
             })
-            socket.emit('xmpp.buddycloud.items.recent', request, {})
+            socket.emit('xmpp.buddycloud.items.recent', request, function() {})
         })
 
         it('Sends expected stanza with RSM', function(done) {
@@ -158,7 +158,7 @@ describe('buddycloud', function() {
                 set.getChildText('after').should.equal(request.rsm.after)
                 done()
             })
-            socket.emit('xmpp.buddycloud.items.recent', request, {})
+            socket.emit('xmpp.buddycloud.items.recent', request, function () {})
         })
 
         it('Handles error response', function(done) {
