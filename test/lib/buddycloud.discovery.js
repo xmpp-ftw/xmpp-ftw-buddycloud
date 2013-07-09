@@ -164,7 +164,7 @@ describe('buddycloud', function() {
         })
 
         it('Handles unresponsive components', function(done) {
-            buddycloud.DISCO_RESPONSE_TIMEOUT = 1
+            buddycloud.setDiscoveryTimeout(1)
             xmpp.once('stanza', function(stanza) {
                 xmpp.on('stanza', function(stanza) {
                     // ...do nothing...
