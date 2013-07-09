@@ -4,6 +4,7 @@ xmpp-ftw-buddycloud
 A [buddycloud](http://buddycloud.com) plugin for XMPP-FTW.
 
 https://github.com/lloydwatkin/xmpp-ftw.git
+https://xmpp-ftw.jit.su
 
 # Manual
 
