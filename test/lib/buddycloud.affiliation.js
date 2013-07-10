@@ -28,7 +28,7 @@ describe('buddycloud', function() {
         buddycloud.channelServer = 'channels.example.com'
     })
 
-    describe('Get subscriptions', function() {
+    describe('Get affiliations', function() {
 
         it('Errors when no callback provided', function(done) {
             xmpp.once('stanza', function() {
@@ -42,7 +42,7 @@ describe('buddycloud', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             })
-            socket.emit('xmpp.buddycloud.subscriptions', {})
+            socket.emit('xmpp.buddycloud.affiliations', {})
         })
 
         it('Errors when non-function callback provided', function(done) {
@@ -57,12 +57,12 @@ describe('buddycloud', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             })
-            socket.emit('xmpp.buddycloud.subscriptions', {}, true)
+            socket.emit('xmpp.buddycloud.affiliations', {}, true)
         })
 
         it('Complains if discovery hasn\'t taken place', function(done) {
             delete buddycloud.channelServer
-            socket.emit('xmpp.buddycloud.subscriptions', {}, function(error, data) {
+            socket.emit('xmpp.buddycloud.affiliations', {}, function(error, data) {
                 should.not.exist(data)
                 error.should.eql({
                     type: 'modify',
@@ -80,10 +80,10 @@ describe('buddycloud', function() {
                 stanza.is('iq').should.be.true
                 var pubsub = stanza.getChild('pubsub', buddycloud.NS_PUBSUB)
                 pubsub.should.exist
-                pubsub.getChild('subscriptions').should.exist
+                pubsub.getChild('affiliations').should.exist
                 done()
             })
-            socket.emit('xmpp.buddycloud.subscriptions', request, function() {})
+            socket.emit('xmpp.buddycloud.affiliations', request, function() {})
         })
         
         it('Handles an error reply', function(done) {
@@ -99,10 +99,10 @@ describe('buddycloud', function() {
                 done()
             }
             var request = {
-                node: '/user/romeo@example.com/post'
+                node: '/user/romeo@example.com/post',
             }
             socket.emit(
-                'xmpp.buddycloud.subscriptions',
+                'xmpp.buddycloud.affiliations',
                 request,
                 callback
             )
@@ -110,7 +110,7 @@ describe('buddycloud', function() {
 
         it('Returns data in expected format', function(done) {
             xmpp.once('stanza', function(stanza) {
-                manager.makeCallback(helper.getStanza('subscriptions'))
+                manager.makeCallback(helper.getStanza('affiliations'))
             })
             var callback = function(error, success) {
                 should.not.exist(error)
@@ -120,18 +120,18 @@ describe('buddycloud', function() {
                     domain: 'example.com',
                     user: 'romeo'
                 })
-                success[0].subscription.should.equal('subscribed')
+                success[0].affiliation.should.equal('owner')
                 success[1].node.should.equal('/user/juliet@example.net/posts')
                 success[1].jid.should.eql({
                     domain: 'example.com',
                     user: 'romeo'
                 })
-                success[1].subscription.should.equal('pending')
+                success[1].affiliation.should.equal('member')
                 done()
             }
             var request = {}
             socket.emit(
-                'xmpp.buddycloud.subscriptions',
+                'xmpp.buddycloud.affiliations',
                 request,
                 callback
             )
@@ -139,7 +139,7 @@ describe('buddycloud', function() {
 
         it('Returns RSM element', function(done) {
             xmpp.once('stanza', function(stanza) {
-                manager.makeCallback(helper.getStanza('subscriptions-with-rsm'))
+                manager.makeCallback(helper.getStanza('affiliations-with-rsm'))
             })
             var callback = function(error, success, rsm) {
                 should.not.exist(error)
@@ -152,7 +152,7 @@ describe('buddycloud', function() {
             }
             var request = {}
             socket.emit(
-                'xmpp.buddycloud.subscriptions',
+                'xmpp.buddycloud.affiliations',
                 request,
                 callback
             )

@@ -1,0 +1,9 @@
+<iq id="1" type="result" to="romeo@example.com/resource" 
+    from="channels.example.com" xmlns:stream="http://etherx.jabber.org/streams">
+    <pubsub xmlns="http://jabber.org/protocol/pubsub">
+        <subscriptions>
+            <subscription jid="romeo@example.com" subscription="subscribed" node="/user/romeo@example.com/posts"/>
+            <subscription jid="romeo@example.com" subscription="pending" node="/user/juliet@example.net/posts"/>
+        </subscriptions>
+    </pubsub>
+</iq>
