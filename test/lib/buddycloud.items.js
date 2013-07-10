@@ -651,7 +651,7 @@ describe('buddycloud', function() {
             )
         })
         
-                 it('Errors when no callback provided', function(done) {
+        it('Errors when no callback provided', function(done) {
             xmpp.once('stanza', function() {
                 done('Unexpected outgoing stanza')
             })
