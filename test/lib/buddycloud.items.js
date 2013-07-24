@@ -483,6 +483,8 @@ describe('buddycloud', function() {
     })
     
     describe('Item retrieve', function() {
+        
+        // Note: Other tests all fallback on those from xmpp-ftw-pubsub
 
         it('Errors if buddycloud server not discovered', function(done) {
             delete buddycloud.channelServer
