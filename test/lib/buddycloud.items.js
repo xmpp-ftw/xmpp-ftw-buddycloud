@@ -439,8 +439,10 @@ describe('buddycloud', function() {
                 success.length.should.equal(2)
                 success[0].id.should.equal('item-1')
                 success[0].entry.should.eql({ body: 'item-1-content' })
+                success[0].node.should.equal(request.node)
                 success[1].id.should.equal('item-2')
                 success[1].entry.should.eql({ body: 'item-2-content' })
+                success[1].node.should.equal(request.node)
                 done()
             }
             var request = {
@@ -674,8 +676,10 @@ describe('buddycloud', function() {
                 success.length.should.equal(2)
                 success[0].id.should.equal('item-1')
                 success[0].entry.should.eql({ body: 'item-1-content' })
+                success[0].node.should.equal(request.node)
                 success[1].id.should.equal('item-2')
                 success[1].entry.should.eql({ body: 'item-2-content' })
+                success[1].node.should.equal(request.node)
                 done()
             }
             var request = {
