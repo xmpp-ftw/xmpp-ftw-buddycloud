@@ -479,6 +479,68 @@ describe('buddycloud', function() {
         })
 
     })
+    
+    describe('Item retrieve', function() {
+
+        it('Errors if buddycloud server not discovered', function(done) {
+            delete buddycloud.channelServer
+            var callback = function(error, data) {
+                should.not.exist(data)
+                error.should.eql({
+                    type: 'modify',
+                    condition: 'client-error',
+                    description: 'You must perform discovery first!',
+                    request: {}
+                })
+                done()
+            }
+            socket.emit('xmpp.buddycloud.retrieve', {}, callback)
+        })
+        
+        it.only('Returns RSM element', function(done) {
+            xmpp.once('stanza', function(stanza) {
+                manager.makeCallback(helper.getStanza('item-replies-rsm'))
+            })
+            var callback = function(error, success, rsm) {
+                should.not.exist(error)
+                rsm.should.eql({
+                    count: 20,
+                    first: 'item-1',
+                    last: 'item-10'
+                })
+                done()
+            }
+            var request = {
+                node: '/user/romeo@example.com/post',
+                id: '1234'
+            }
+            socket.emit(
+                'xmpp.buddycloud.retrieve',
+                request,
+                callback
+            )
+        })
+        
+        it('Adds node key to each response item', function(done) {
+            xmpp.once('stanza', function(stanza) {
+                manager.makeCallback(helper.getStanza('item-replies'))
+            })
+            var callback = function(error, success) {
+                should.not.exist(error)
+                success.forEach(function(item) {
+                    item.node.should.equal(request.node)  
+                })
+                done()
+            }
+            var request = { node: '/user/romeo@example.com/post' }
+            socket.emit(
+                'xmpp.buddycloud.retrieve',
+                request,
+                callback
+            )
+        })
+        
+    })
 
     describe('Item thread', function() {
 
