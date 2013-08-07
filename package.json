@@ -34,7 +34,8 @@
     "xmpp-ftw-item-parser": "*",
     "xmpp-ftw-pubsub": "*",
     "xmpp-ftw-disco": "*",
-    "async": "~0.2.9"
+    "async": "~0.2.9",
+    "xmpp-ftw-register": "*"
   },
   "devDependencies": {
     "mocha": "~1.8.1",
