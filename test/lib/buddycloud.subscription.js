@@ -1,9 +1,9 @@
-var should  = require('should')
-  , Buddycloud = require('../../lib/buddycloud')
-  , ltx     = require('ltx')
-  , helper  = require('../helper')
+var should      = require('should')
+  , Buddycloud  = require('../../lib/buddycloud')
+  , ltx         = require('ltx')
+  , helper      = require('../helper')
 
-describe('buddycloud', function() {
+describe('Buddycloud', function() {
 
     var buddycloud, socket, xmpp, manager
 
@@ -18,20 +18,21 @@ describe('buddycloud', function() {
             },
             makeCallback: function(error, data) {
                 this.callback(error, data)
-            }
+            },
+            jid: 'juliet@example.net'
         }
         buddycloud = new Buddycloud()
         buddycloud.init(manager)
     })
     
     beforeEach(function() {
-        buddycloud.channelServer = 'channels.example.com'
+      buddycloud.channelServer = 'channels.shakespeare.lit'
     })
 
-    describe('Get subscriptions', function() {
+    describe('Subscription', function() {
 
-        it('Errors when no callback provided', function(done) {
-            xmpp.once('stanza', function() {
+         it('Errors when no callback provided', function(done) {
+             xmpp.once('stanza', function() {
                 done('Unexpected outgoing stanza')
             })
             socket.once('xmpp.error.client', function(error) {
@@ -42,7 +43,7 @@ describe('buddycloud', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             })
-            socket.emit('xmpp.buddycloud.subscriptions', {})
+            socket.emit('xmpp.buddycloud.subscription', {})
         })
 
         it('Errors when non-function callback provided', function(done) {
@@ -73,20 +74,35 @@ describe('buddycloud', function() {
                 done()                
             })
         })
-
+        
         it('Sends expected stanza', function(done) {
-            var request = {}
+            var request = { 
+              node: '/user/twelfth@night.org/posts',
+              jid: 'juliet@shakespeare.lit',
+              subscription: 'subscribed'
+            }
             xmpp.once('stanza', function(stanza) {
                 stanza.is('iq').should.be.true
-                var pubsub = stanza.getChild('pubsub', buddycloud.NS_PUBSUB)
-                pubsub.should.exist
-                pubsub.getChild('subscriptions').should.exist
+                stanza.attrs.to.should.equal(buddycloud.channelServer)
+                stanza.attrs.type.should.equal('set')
+                stanza.attrs.id.should.exist
+                stanza.getChild('pubsub', buddycloud.NS_OWNER).should.exist
+                var subscriptions = stanza.getChild('pubsub')
+                    .getChild('subscriptions')
+                subscriptions.should.exist
+                subscriptions.attrs.node.should.equal(request.node)
+                
+                var subscription = subscriptions.getChild('subscription')
+                subscription.attrs.jid.should.equal(request.jid)
+                subscription.attrs.subscription
+                    .should.equal(request.subscription)
+
                 done()
             })
-            socket.emit('xmpp.buddycloud.subscriptions', request, function() {})
+            socket.emit('xmpp.buddycloud.subscription', request, function() {})
         })
-        
-        it('Handles an error reply', function(done) {
+
+        it('Handles an error stanza response', function(done) {
             xmpp.once('stanza', function(stanza) {
                 manager.makeCallback(helper.getStanza('iq-error'))
             })
@@ -98,65 +114,39 @@ describe('buddycloud', function() {
                 })
                 done()
             }
-            var request = {
-                node: '/user/romeo@example.com/post'
+            var request = { 
+              node: '/user/twelfth@night.org/posts',
+              jid: 'juliet@shakespeare.lit',
+              subscription: 'subscribed'
             }
             socket.emit(
-                'xmpp.buddycloud.subscriptions',
+                'xmpp.buddycloud.subscription',
                 request,
                 callback
             )
         })
 
-        it('Returns data in expected format', function(done) {
+        it('Handles basic success response', function(done) {
             xmpp.once('stanza', function(stanza) {
-                manager.makeCallback(helper.getStanza('subscriptions'))
+                manager.makeCallback(helper.getStanza('subscribe-basic'))
             })
             var callback = function(error, success) {
                 should.not.exist(error)
-                success.length.should.equal(2)
-                success[0].node.should.equal('/user/romeo@example.com/posts')
-                success[0].jid.should.eql({
-                    domain: 'example.com',
-                    user: 'romeo'
-                })
-                success[0].subscription.should.equal('subscribed')
-                success[1].node.should.equal('/user/juliet@example.net/posts')
-                success[1].jid.should.eql({
-                    domain: 'example.com',
-                    user: 'romeo'
-                })
-                success[1].subscription.should.equal('pending')
+                success.should.be.true
                 done()
             }
-            var request = {}
-            socket.emit(
-                'xmpp.buddycloud.subscriptions',
-                request,
-                callback
-            )
-        })
-
-        it('Returns RSM element', function(done) {
-            xmpp.once('stanza', function(stanza) {
-                manager.makeCallback(helper.getStanza('subscriptions-with-rsm'))
-            })
-            var callback = function(error, success, rsm) {
-                should.not.exist(error)
-                rsm.should.eql({
-                    count: 20,
-                    first: 'item-1',
-                    last: 'item-10'
-                })
-                done()
+            var request = { 
+              node: '/user/twelfth@night.org/posts',
+              jid: 'juliet@shakespeare.lit',
+              subscription: 'subscribed'
             }
-            var request = {}
             socket.emit(
-                'xmpp.buddycloud.subscriptions',
+                'xmpp.buddycloud.subscription',
                 request,
                 callback
             )
         })
 
     })
+    
 })
