@@ -159,4 +159,80 @@ describe('buddycloud', function() {
         })
 
     })
+    
+    /*
+     * Superficial tests as these are covered by xmpp-ftw-pubsub
+     */
+    describe('Set affiliation', function() {
+      
+        it('Errors when no callback provided', function(done) {
+            xmpp.once('stanza', function() {
+                done('Unexpected outgoing stanza')
+            })
+            socket.once('xmpp.error.client', function(error) {
+                error.type.should.equal('modify')
+                error.condition.should.equal('client-error')
+                error.description.should.equal("Missing callback")
+                error.request.should.eql({})
+                xmpp.removeAllListeners('stanza')
+                done()
+            })
+            socket.emit('xmpp.buddycloud.affiliation', {})
+        })
+
+        it('Errors when non-function callback provided', function(done) {
+            xmpp.once('stanza', function() {
+                done('Unexpected outgoing stanza')
+            })
+            socket.once('xmpp.error.client', function(error) {
+                error.type.should.equal('modify')
+                error.condition.should.equal('client-error')
+                error.description.should.equal("Missing callback")
+                error.request.should.eql({})
+                xmpp.removeAllListeners('stanza')
+                done()
+            })
+            socket.emit('xmpp.buddycloud.affiliation', {}, true)
+        })
+
+        it('Complains if discovery hasn\'t taken place', function(done) {
+            delete buddycloud.channelServer
+            socket.emit('xmpp.buddycloud.affiliation', {}, function(error, data) {
+                should.not.exist(data)
+                error.should.eql({
+                    type: 'modify',
+                    condition: 'client-error',
+                    description: 'You must perform discovery first!',
+                    request: {}
+                })
+                done()                
+            })
+        })
+
+        it('Sends expected stanza', function(done) {
+            var request = {
+               node: '/user/romeo@shakespeare.lit/posts',
+               affiliation: 'publisher',
+               jid: 'juliet@shakespeare.lit'
+            }
+            xmpp.once('stanza', function(stanza) {
+                stanza.is('iq').should.be.true
+                stanza.attrs.type.should.equal('set')
+                stanza.attrs.id.should.existß
+                var pubsub = stanza.getChild('pubsub', buddycloud.NS_OWNER)
+                pubsub.should.exist
+                var affiliations = pubsub.getChild('affiliations')
+                affiliations.should.exist
+                affiliations.attrs.node.should.equal(request.node)
+                
+                var affiliation = affiliations.getChild('affiliation')
+                affiliation.should.exist
+                affiliation.attrs.affiliation.should.equal(request.affiliation)
+                affiliation.attrs.jid.should.equal(request.jid)
+                done()
+            })
+            socket.emit('xmpp.buddycloud.affiliation', request, function() {})
+        })
+        
+    })
 })
