@@ -369,7 +369,7 @@ describe('buddycloud', function() {
         
         })
 
-        it.skip('Node purge notification', function(done) {
+        it('Node purge notification', function(done) {
             var stanza = new ltx.parse(
                 '<message from="channels.shakespeare.lit">'
                 + '<event xmlns="' + buddycloud.NS_EVENT + '">'
