@@ -58,12 +58,12 @@ describe('Buddycloud', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             })
-            socket.emit('xmpp.buddycloud.subscriptions', {}, true)
+            socket.emit('xmpp.buddycloud.subscription', {}, true)
         })
 
         it('Complains if discovery hasn\'t taken place', function(done) {
             delete buddycloud.channelServer
-            socket.emit('xmpp.buddycloud.subscriptions', {}, function(error, data) {
+            socket.emit('xmpp.buddycloud.subscription', {}, function(error, data) {
                 should.not.exist(data)
                 error.should.eql({
                     type: 'modify',
