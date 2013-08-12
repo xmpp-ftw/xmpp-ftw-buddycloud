@@ -179,5 +179,29 @@ describe('buddycloud', function() {
         })
 
     })
+    
+    describe('Disco proxy', function() {
+      
+        it('Responses to disco#info events', function(done) {
+            xmpp.once('stanza', function() {
+                done('Unexpected outgoing stanza')
+            })
+            var callback = function(error, data) {
+                done()
+            }
+            socket.emit('xmpp.buddycloud.discover.info', {}, callback)
+        })
+        
+        it('Responds to disco#items events', function(done) {
+            xmpp.once('stanza', function() {
+                done('Unexpected outgoing stanza')
+            })
+            var callback = function(error, data) {
+                done()
+            }
+            socket.emit('xmpp.buddycloud.discover.items', {}, callback)
+        })
+      
+    })
 
 })
