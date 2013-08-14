@@ -33,25 +33,25 @@ describe('buddycloud', function() {
        it('Doesn\'t handle packets if server not discovered', function() {
           delete buddycloud.channelServer
           buddycloud.handles(
-              new ltx.parse('<iq to="channels.shakespeare.lit"/>')
+              new ltx.parse('<iq from="channels.shakespeare.lit"/>')
           ).should.be.false
        })
        
        it('Doesn\'t handle <iq> packets', function() {
            buddycloud.handles(
-             new ltx.parse('<iq to="channels.shakespeare.lit" />')
+             new ltx.parse('<iq from="channels.shakespeare.lit" />')
            ).should.be.false
        })
 
        it('Doesn\'t handle <presence> packets', function() {
            buddycloud.handles(
-               new ltx.parse('<presence to="channels.shakespeare.lit"/>')
+               new ltx.parse('<presence from="channels.shakespeare.lit"/>')
            ).should.be.false
        })
 
        it('Handles messages with \'event\' namespace', function() {
            var stanza = new ltx.parse(
-             '<message to="channels.shakespeare.lit">'
+             '<message from="channels.shakespeare.lit">'
              + '<event xmlns="' 
              + buddycloud.NS_EVENT + '" /></message>'
            )
@@ -60,7 +60,7 @@ describe('buddycloud', function() {
 
        it('Handles authorisation requests', function() {
            var stanza = new ltx.parse(
-               '<message to="channels.shakespeare.lit">'
+               '<message from="channels.shakespeare.lit">'
                + '<x><field type="hidden"><value>'
                + buddycloud.NS_SUBSCRIBE_AUTHORISATION
                + '</value></field></x></message>'
@@ -70,7 +70,7 @@ describe('buddycloud', function() {
 
        it('Doesn\'t handle other messages', function() {
            var stanza = new ltx.parse(
-             '<message to="channels.shakespeare.lit">'
+             '<message from="channels.shakespeare.lit">'
              + '<event xmlns="'
              + buddycloud.NS_PUBSUB + '" /></message>'
            )
