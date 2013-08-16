@@ -181,16 +181,20 @@ describe('buddycloud', function() {
         it('Slow component reply doesn\'t callback() twice', function(done) {
             buddycloud.setDiscoveryTimeout(0)
             xmpp.on('stanza', function(stanza) {
-                if (-1 !== stanza.toString().indexOf('disco#items'))
-                  return manager.makeCallback(helper.getStanza('disco-items'))
+                if (-1 !== stanza.toString().indexOf('disco#items')) {
+                  manager.makeCallback(helper.getStanza('disco-items'))
+                  setTimeout(function() {
+                    done()
+                  }, 3)
+                }
                 setTimeout(function() {
                   manager.makeCallback(helper.getStanza('disco-info'))
-                }, 1)
+                }, 2)
+                
             })
             socket.emit('xmpp.buddycloud.discover', {}, function(error, item) {
                 should.not.exist(item)
                 error.should.equal('No buddycloud server found')
-                done()
             })
         })
 
