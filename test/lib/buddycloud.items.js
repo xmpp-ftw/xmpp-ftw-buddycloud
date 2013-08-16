@@ -1,6 +1,5 @@
 var should     = require('should')
   , Buddycloud = require('../../lib/buddycloud')
-  , ltx        = require('ltx')
   , helper     = require('../helper')
 
 var RSM_NS = require('xmpp-ftw/lib/utils/xep-0059').NS
@@ -72,7 +71,7 @@ describe('buddycloud', function() {
                     description: 'You must perform discovery first!',
                     request: {}
                 })
-                done()                
+                done()
             })
         })
 
@@ -125,7 +124,7 @@ describe('buddycloud', function() {
         it('Sends expected stanza', function(done) {
             xmpp.once('stanza', function(stanza) {
                 stanza.is('iq').should.be.true
-                stanza.attrs.to.should.equal(buddycloud.channelServer) 
+                stanza.attrs.to.should.equal(buddycloud.channelServer)
                 stanza.attrs.id.should.exist
                 var pubsub = stanza.getChild('pubsub', buddycloud.NS_PUBSUB)
                 pubsub.should.exist
@@ -192,7 +191,7 @@ describe('buddycloud', function() {
         })
 
         it('Handles error response', function(done) {
-            xmpp.once('stanza', function(stanza) {
+            xmpp.once('stanza', function() {
                 manager.makeCallback(helper.getStanza('iq-error'))
             })
             var callback = function(error, data) {
@@ -207,7 +206,7 @@ describe('buddycloud', function() {
         })
 
         it('Sends back expected data', function(done) {
-            xmpp.once('stanza', function(stanza) {
+            xmpp.once('stanza', function() {
                 manager.makeCallback(helper.getStanza('recent-items'))
             })
             var callback = function(error, data) {
@@ -230,7 +229,7 @@ describe('buddycloud', function() {
         })
 
         it('Sends back RSM element', function(done) {
-            xmpp.once('stanza', function(stanza) {
+            xmpp.once('stanza', function() {
                 manager.makeCallback(helper.getStanza('recent-items-rsm'))
             })
             var callback = function(error, data, rsm) {
@@ -382,7 +381,7 @@ describe('buddycloud', function() {
                 replies.should.exist
                 replies.attrs.node
                     .should.equal(request.node)
-                replies.attrs.item_id.should.equal(request.id)
+                replies.attrs['item_id'].should.equal(request.id)
                 done()
             })
             socket.emit('xmpp.buddycloud.items.replies', request, function() {})
@@ -401,14 +400,14 @@ describe('buddycloud', function() {
                 var set = stanza.getChild('pubsub').getChild('set', RSM_NS)
                 set.should.exist
                 set.getChildText('max').should.equal(request.rsm.max)
-                set.getChild('before').should.exist               
+                set.getChild('before').should.exist
                 done()
             })
             socket.emit('xmpp.buddycloud.items.replies', request, function() {})
         })
 
         it('Handles an error reply', function(done) {
-            xmpp.once('stanza', function(stanza) {
+            xmpp.once('stanza', function() {
                 manager.makeCallback(helper.getStanza('iq-error'))
             })
             var callback = function(error, success) {
@@ -431,7 +430,7 @@ describe('buddycloud', function() {
         })
 
         it('Returns data in expected format', function(done) {
-            xmpp.once('stanza', function(stanza) {
+            xmpp.once('stanza', function() {
                 manager.makeCallback(helper.getStanza('item-replies'))
             })
             var callback = function(error, success) {
@@ -457,7 +456,7 @@ describe('buddycloud', function() {
         })
 
         it('Returns RSM element', function(done) {
-            xmpp.once('stanza', function(stanza) {
+            xmpp.once('stanza', function() {
                 manager.makeCallback(helper.getStanza('item-replies-rsm'))
             })
             var callback = function(error, success, rsm) {
@@ -532,7 +531,7 @@ describe('buddycloud', function() {
         })
         
         it('Returns RSM element', function(done) {
-            xmpp.once('stanza', function(stanza) {
+            xmpp.once('stanza', function() {
                 manager.makeCallback(helper.getStanza('item-replies-rsm'))
             })
             var callback = function(error, success, rsm) {
@@ -556,13 +555,13 @@ describe('buddycloud', function() {
         })
         
         it('Adds node key to each response item', function(done) {
-            xmpp.once('stanza', function(stanza) {
+            xmpp.once('stanza', function() {
                 manager.makeCallback(helper.getStanza('item-replies'))
             })
             var callback = function(error, success) {
                 should.not.exist(error)
                 success.forEach(function(item) {
-                    item.node.should.equal(request.node)  
+                    item.node.should.equal(request.node)
                 })
                 done()
             }
@@ -651,7 +650,7 @@ describe('buddycloud', function() {
                 replies.should.exist
                 replies.attrs.node
                     .should.equal(request.node)
-                replies.attrs.item_id.should.equal(request.id)
+                replies.attrs['item_id'].should.equal(request.id)
                 done()
             })
             socket.emit('xmpp.buddycloud.items.thread', request, function() {})
@@ -670,14 +669,14 @@ describe('buddycloud', function() {
                 var set = stanza.getChild('pubsub').getChild('set', RSM_NS)
                 set.should.exist
                 set.getChildText('max').should.equal(request.rsm.max)
-                set.getChild('before').should.exist               
+                set.getChild('before').should.exist
                 done()
             })
             socket.emit('xmpp.buddycloud.items.thread', request, function() {})
         })
 
         it('Handles an error reply', function(done) {
-            xmpp.once('stanza', function(stanza) {
+            xmpp.once('stanza', function() {
                 manager.makeCallback(helper.getStanza('iq-error'))
             })
             var callback = function(error, success) {
@@ -700,7 +699,7 @@ describe('buddycloud', function() {
         })
 
         it('Returns data in expected format', function(done) {
-            xmpp.once('stanza', function(stanza) {
+            xmpp.once('stanza', function() {
                 manager.makeCallback(helper.getStanza('item-replies'))
             })
             var callback = function(error, success) {
@@ -726,7 +725,7 @@ describe('buddycloud', function() {
         })
 
         it('Returns RSM element', function(done) {
-            xmpp.once('stanza', function(stanza) {
+            xmpp.once('stanza', function() {
                 manager.makeCallback(helper.getStanza('item-replies-rsm'))
             })
             var callback = function(error, success, rsm) {
