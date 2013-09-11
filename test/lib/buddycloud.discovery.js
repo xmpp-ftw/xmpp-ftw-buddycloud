@@ -111,7 +111,7 @@ describe('buddycloud', function() {
                 var discoInfoRequests = 0
                 xmpp.on('stanza', function(stanza) {
                     var errorReply = helper.getStanza('iq-error')
-                    errorReply.attrs.id = stanza.attrs.id 
+                    errorReply.attrs.id = stanza.attrs.id
                     manager.makeCallback(errorReply)
                 })
                 manager.makeCallback(helper.getStanza('disco-items'))
@@ -145,7 +145,7 @@ describe('buddycloud', function() {
                 var discoInfoRequests = 0
                 xmpp.on('stanza', function(stanza) {
                     ++discoInfoRequests
-                    if (1 === discoInfoRequests) 
+                    if (1 === discoInfoRequests)
                         return manager.makeCallback(
                             helper.getStanza('disco-info')
                         )
@@ -222,6 +222,20 @@ describe('buddycloud', function() {
             socket.emit('xmpp.buddycloud.discover.items', {}, callback)
         })
       
+    })
+    
+    it('Allows manual setting of channel server', function(done) {
+
+        socket.emit(
+            'xmpp.buddycloud.discover',
+            { server: 'channels.example.com' },
+            function(error, item) {
+                
+            should.not.exist(error)
+            item.should.equal('channels.example.com')
+            buddycloud.channelServer.should.equal('channels.example.com')
+            done()
+        })
     })
 
 })
