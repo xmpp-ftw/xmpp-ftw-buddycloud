@@ -1,0 +1,49 @@
+<iq type='result'
+    from='channels.shakespeare.lit'
+    to='romeo@montague.lit/home'
+    id='search:4'>
+  <query xmlns='jabber:iq:search'>
+    <x xmlns='jabber:x:data' type='result'>
+      <field type='hidden' var='FORM_TYPE'>
+        <value>jabber:iq:search</value>
+      </field>
+      <reported>
+          <field var='node'
+            label='Node'
+            type='text-single'/>
+          <field var='id'
+            label='Item ID'
+            type='text-single'/>
+          <field var='entry'
+            label='Item'
+            type='xml'/>
+      </reported>
+      <item>
+        <field var='node'>
+          <value>/user/romeo@montague.lit/posts</value>
+        </field>
+        <field var='id'>
+          <value>5w382609806986536982502859083409</value>
+        </field>
+        <field var='entry'>
+          <value>
+            <body>Hello World</body>
+          </value>
+        </field>
+      </item>
+      <item>
+        <field var='node'>
+          <value>/user/juliet@capulet.lit/posts</value>
+        </field>
+        <field var='id'>
+          <value>fg455g542hg4hhtfgh4554hg5g5g54h4F</value>
+        </field>
+        <field var='entry'>
+          <value>
+            <body>Hello Everyone</body>
+          </value>
+        </field>
+      </item>
+    </x>
+  </query>
+</iq>
