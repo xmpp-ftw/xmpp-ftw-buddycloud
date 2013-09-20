@@ -24,7 +24,7 @@ describe('buddycloud', function() {
         buddycloud.channelServer = 'chanels.example.com'
     })
 
-    it.only('Parses entry XML to expected format', function(done) {
+    it('Parses entry XML to expected format', function(done) {
         
             var payload = {
                 form: [
