@@ -18,6 +18,14 @@ describe('buddycloud', function() {
             },
             makeCallback: function(error, data) {
                 this.callback(error, data)
+            },
+            _getLogger: function() {
+                return {
+                    log: function() {},
+                    info: function() {},
+                    error: function() {},
+                    warn: function() {}
+                }
             }
         }
         buddycloud = new Buddycloud()

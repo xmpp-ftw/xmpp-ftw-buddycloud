@@ -19,7 +19,15 @@ describe('buddycloud', function() {
             makeCallback: function(error, data) {
                 this.callback(error, data)
             },
-            jid: "romeo@example.com"
+            jid: 'romeo@example.com',
+            _getLogger: function() {
+                return {
+                    log: function() {},
+                    info: function() {},
+                    error: function() {},
+                    warn: function() {}
+                }
+            }
         }
         buddycloud = new Buddycloud()
         buddycloud.init(manager)
