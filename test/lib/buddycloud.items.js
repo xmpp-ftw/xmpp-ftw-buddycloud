@@ -141,7 +141,7 @@ describe('buddycloud', function() {
                 recentItems.should.exist
                 recentItems.attrs.max
                     .should.equal(buddycloud.maxRecentItemsPerChannel)
-                recentItems.attrs.since.should.equal('2000-01-01T00:00:00.000Z')
+                recentItems.attrs.since.should.equal('2000-01-01T08:00:00.000Z')
                 done()
             })
             socket.emit('xmpp.buddycloud.items.recent', {}, function() {})
