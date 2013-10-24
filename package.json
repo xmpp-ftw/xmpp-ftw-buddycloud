@@ -37,11 +37,10 @@
     "async": "~0.2.9",
     "xmpp-ftw-register": "*",
     "xmpp-ftw-search": "*",
-    "should": "~2.0.2"
   },
   "devDependencies": {
     "mocha": "~1.8.1",
-    "should": "~1.2.2",
+    "should": "~2.0.2",
     "xmpp-ftw": "*"
   },
   "peerDependencies": {
