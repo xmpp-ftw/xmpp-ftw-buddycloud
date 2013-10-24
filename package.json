@@ -36,7 +36,8 @@
     "xmpp-ftw-disco": "*",
     "async": "~0.2.9",
     "xmpp-ftw-register": "*",
-    "xmpp-ftw-search": "*"
+    "xmpp-ftw-search": "*",
+    "should": "~2.0.2"
   },
   "devDependencies": {
     "mocha": "~1.8.1",
