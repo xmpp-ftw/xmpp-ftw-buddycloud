@@ -1,6 +1,6 @@
 {
   "name": "xmpp-ftw-buddycloud",
-  "version": "0.20.4",
+  "version": "0.20.5",
   "description": "buddycloud plugin for XMPP-FTW",
   "main": "index.js",
   "directories": {
