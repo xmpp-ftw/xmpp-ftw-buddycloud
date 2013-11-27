@@ -29,3 +29,7 @@ npm i --save xmpp-ftw-buddycloud
 ```
 npm test
 ```
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/xmpp-ftw/xmpp-ftw-buddycloud/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
