@@ -1,5 +1,5 @@
 var should  = require('should')
-  , Buddycloud = require('../../lib/buddycloud')
+  , Buddycloud = require('../../index')
   , ltx     = require('ltx')
   , helper  = require('../helper')
 
@@ -31,7 +31,7 @@ describe('buddycloud', function() {
         buddycloud = new Buddycloud()
         buddycloud.init(manager)
     })
-    
+
     beforeEach(function() {
         buddycloud.channelServer = 'channels.example.com'
     })
@@ -78,7 +78,7 @@ describe('buddycloud', function() {
                     description: 'You must perform discovery first!',
                     request: {}
                 })
-                done()                
+                done()
             })
         })
 
@@ -93,7 +93,7 @@ describe('buddycloud', function() {
             })
             socket.emit('xmpp.buddycloud.affiliations', request, function() {})
         })
-        
+
         it('Handles an error reply', function(done) {
             xmpp.once('stanza', function(stanza) {
                 manager.makeCallback(helper.getStanza('iq-error'))
@@ -167,12 +167,12 @@ describe('buddycloud', function() {
         })
 
     })
-    
+
     /*
      * Superficial tests as these are covered by xmpp-ftw-pubsub
      */
     describe('Set affiliation', function() {
-      
+
         it('Errors when no callback provided', function(done) {
             xmpp.once('stanza', function() {
                 done('Unexpected outgoing stanza')
@@ -213,7 +213,7 @@ describe('buddycloud', function() {
                     description: 'You must perform discovery first!',
                     request: {}
                 })
-                done()                
+                done()
             })
         })
 
@@ -232,7 +232,7 @@ describe('buddycloud', function() {
                 var affiliations = pubsub.getChild('affiliations')
                 affiliations.should.exist
                 affiliations.attrs.node.should.equal(request.node)
-                
+
                 var affiliation = affiliations.getChild('affiliation')
                 affiliation.should.exist
                 affiliation.attrs.affiliation.should.equal(request.affiliation)
@@ -241,6 +241,6 @@ describe('buddycloud', function() {
             })
             socket.emit('xmpp.buddycloud.affiliation', request, function() {})
         })
-        
+
     })
 })

@@ -1,5 +1,5 @@
 var should  = require('should')
-  , buddycloud = require('../../lib/buddycloud')
+  , Buddycloud = require('../../index')
   , ltx     = require('ltx')
   , helper  = require('../helper')
 

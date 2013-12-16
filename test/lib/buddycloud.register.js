@@ -1,5 +1,5 @@
 var should  = require('should')
-  , Buddycloud = require('../../lib/buddycloud')
+  , Buddycloud = require('../../index')
   , ltx     = require('ltx')
   , helper  = require('../helper')
 
@@ -31,11 +31,11 @@ describe('buddycloud', function() {
         buddycloud = new Buddycloud()
         buddycloud.init(manager)
     })
-    
+
     beforeEach(function() {
       buddycloud.channelServer = 'channels.shakespeare.lit'
     })
-    
+
     describe('Register', function() {
 
         it('Errors if buddycloud server not discovered', function(done) {
@@ -52,7 +52,7 @@ describe('buddycloud', function() {
             }
             socket.emit('xmpp.buddycloud.register', {}, callback)
         })
-        
+
         it('Sends expected stanza', function(done) {
           xmpp.once('stanza', function(stanza) {
             stanza.is('iq').should.be.true
@@ -68,5 +68,5 @@ describe('buddycloud', function() {
           )
         })
     })
-    
+
 })

@@ -1,5 +1,5 @@
 var should  = require('should')
-  , Buddycloud = require('../../lib/buddycloud')
+  , Buddycloud = require('../../index')
   , ltx     = require('ltx')
   , helper  = require('../helper')
 
@@ -31,14 +31,14 @@ describe('buddycloud', function() {
         buddycloud = new Buddycloud()
         buddycloud.init(manager)
     })
-    
+
     beforeEach(function() {
         buddycloud.channelServer = 'channels.example.com'
         xmpp.removeAllListeners('stanza')
     })
-    
+
     describe('Configuration', function() {
-      
+
         describe('Get', function() {
 
             it('Errors when no callback provided', function(done) {
@@ -55,7 +55,7 @@ describe('buddycloud', function() {
                 })
                 socket.emit('xmpp.buddycloud.config.get', {})
             })
-    
+
             it('Errors when non-function callback provided', function(done) {
                 xmpp.once('stanza', function() {
                     done('Unexpected outgoing stanza')
@@ -70,7 +70,7 @@ describe('buddycloud', function() {
                 })
                 socket.emit('xmpp.buddycloud.config.get', {}, true)
             })
-            
+
             it('Errors if buddycloud server not discovered', function(done) {
                 delete buddycloud.channelServer
                 var callback = function(error, data) {
@@ -85,7 +85,7 @@ describe('buddycloud', function() {
                 }
                 socket.emit('xmpp.buddycloud.config.get', {}, callback)
             })
-    
+
             it('Errors if no \'node\' provided', function(done) {
                 var request = {}
                 xmpp.once('stanza', function() {
@@ -106,7 +106,7 @@ describe('buddycloud', function() {
                     callback
                 )
             })
-            
+
             it('Sends the expected stanza', function(done) {
                 xmpp.once('stanza', function(stanza) {
                     stanza.is('iq').should.be.true
@@ -115,11 +115,11 @@ describe('buddycloud', function() {
                     stanza.attrs.id.should.exist
                     stanza.getChild('query', buddycloud.disco.NS_INFO)
                         .should.exist
-                    done() 
+                    done()
                 })
                 socket.emit('xmpp.buddycloud.config.get', { node: 'some-node' }, function() {})
             })
-            
+
             it('Can handle error response from server', function(done) {
                 xmpp.once('stanza', function(stanza) {
                      stanza.is('iq').should.be.true
@@ -129,7 +129,7 @@ describe('buddycloud', function() {
                      var query = stanza.getChild('query', buddycloud.disco.NS_INFO)
                      manager.makeCallback(helper.getStanza('iq-error'))
                 })
-                
+
                 var callback = function(error, success) {
                     should.not.exist(success)
                     error.should.eql({
@@ -140,7 +140,7 @@ describe('buddycloud', function() {
                 }
                 socket.emit('xmpp.buddycloud.config.get', { node: 'some-node' }, callback)
             })
-            
+
             it('Can handle no node information', function(done) {
                 var request = {
                     of: 'wonderland.lit',
@@ -179,7 +179,7 @@ describe('buddycloud', function() {
                 }
                 socket.emit('xmpp.buddycloud.config.get', request, callback)
             })
-            
+
             it('Sends the expected stanza for owner request', function(done) {
                 var request = { node: 'some-node', owner: true }
                 xmpp.once('stanza', function(stanza) {
@@ -195,7 +195,7 @@ describe('buddycloud', function() {
                 })
                 socket.emit('xmpp.buddycloud.config.get', request, function() {})
             })
-            
+
             it('Handles error response stanza', function(done) {
                 xmpp.once('stanza', function(stanza) {
                     manager.makeCallback(helper.getStanza('iq-error'))
@@ -214,7 +214,7 @@ describe('buddycloud', function() {
                 }
                 socket.emit('xmpp.buddycloud.config.get', request, callback)
             })
-    
+
             it('Returns configuration data', function(done) {
                 xmpp.once('stanza', function(stanza) {
                     manager.makeCallback(helper.getStanza('configuration'))
@@ -237,11 +237,11 @@ describe('buddycloud', function() {
                 }
                 socket.emit('xmpp.buddycloud.config.get', request, callback)
             })
-            
+
         })
-                 
+
     })
-    
+
     describe('Create', function() {
 
         it('Errors when no callback provided', function(done) {
@@ -273,7 +273,7 @@ describe('buddycloud', function() {
             })
             socket.emit('xmpp.buddycloud.create', {}, true)
         })
-        
+
         it('Errors if buddycloud server not discovered', function(done) {
             delete buddycloud.channelServer
             var callback = function(error, data) {
@@ -309,7 +309,7 @@ describe('buddycloud', function() {
                 callback
             )
         })
-        
+
         it('Errors with unparsable data form', function(done) {
             var request = {
                 node: '/user/romeo@example.com/posts',
@@ -333,7 +333,7 @@ describe('buddycloud', function() {
                 callback
             )
         })
-        
+
         it('Sends the expected stanza', function(done) {
             var request = { node: '/user/romeo@example.com/posts' }
             xmpp.once('stanza', function(stanza) {
@@ -344,11 +344,11 @@ describe('buddycloud', function() {
                 stanza.getChild('pubsub', buddycloud.NS_PUBSUB).should.exist
                 var create = stanza.getChild('pubsub').getChild('create')
                 create.attrs.node.should.equal(request.node)
-                done() 
+                done()
             })
             socket.emit('xmpp.buddycloud.create', request, function() {})
         })
-        
+
         it('Sends expected stanza with data form (configuration)', function(done) {
             xmpp.once('stanza', function(stanza) {
                 var create = stanza.getChild('pubsub').getChild('create')
@@ -381,12 +381,12 @@ describe('buddycloud', function() {
                 function() {}
             )
         })
-        
+
         it('Can handle error response from server', function(done) {
             xmpp.once('stanza', function(stanza) {
                  manager.makeCallback(helper.getStanza('iq-error'))
             })
-            
+
             var callback = function(error, success) {
                 should.not.exist(success)
                 error.should.eql({
@@ -397,7 +397,7 @@ describe('buddycloud', function() {
             }
             socket.emit('xmpp.buddycloud.create', { node: 'some-node' }, callback)
         })
-            
+
     })
 
 })

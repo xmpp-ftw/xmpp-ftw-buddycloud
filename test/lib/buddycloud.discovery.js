@@ -1,5 +1,5 @@
 var should  = require('should')
-  , Buddycloud = require('../../lib/buddycloud')
+  , Buddycloud = require('../../index')
   , ltx     = require('ltx')
   , helper  = require('../helper')
 
@@ -147,7 +147,7 @@ describe('buddycloud', function() {
             })
         })
 
-    
+
         it('Handles disco#info responses; returns failure', function(done) {
             xmpp.once('stanza', function(stanza) {
                 var discoInfoRequests = 0
@@ -185,7 +185,7 @@ describe('buddycloud', function() {
                 done()
             })
         })
-        
+
         it('Slow component reply doesn\'t callback() twice', function(done) {
             buddycloud.setDiscoveryTimeout(0)
             xmpp.on('stanza', function(stanza) {
@@ -198,7 +198,7 @@ describe('buddycloud', function() {
                 setTimeout(function() {
                   manager.makeCallback(helper.getStanza('disco-info'))
                 }, 2)
-                
+
             })
             socket.emit('xmpp.buddycloud.discover', {}, function(error, item) {
                 should.not.exist(item)
@@ -207,9 +207,9 @@ describe('buddycloud', function() {
         })
 
     })
-    
+
     describe('Disco proxy', function() {
-      
+
         it('Responses to disco#info events', function(done) {
             xmpp.once('stanza', function() {
                 done('Unexpected outgoing stanza')
@@ -219,7 +219,7 @@ describe('buddycloud', function() {
             }
             socket.emit('xmpp.buddycloud.discover.info', {}, callback)
         })
-        
+
         it('Responds to disco#items events', function(done) {
             xmpp.once('stanza', function() {
                 done('Unexpected outgoing stanza')
@@ -229,16 +229,16 @@ describe('buddycloud', function() {
             }
             socket.emit('xmpp.buddycloud.discover.items', {}, callback)
         })
-      
+
     })
-    
+
     it('Allows manual setting of channel server', function(done) {
 
         socket.emit(
             'xmpp.buddycloud.discover',
             { server: 'channels.example.com' },
             function(error, item) {
-                
+
             should.not.exist(error)
             item.should.equal('channels.example.com')
             buddycloud.channelServer.should.equal('channels.example.com')

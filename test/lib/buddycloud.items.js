@@ -1,8 +1,8 @@
 var should     = require('should')
-  , Buddycloud = require('../../lib/buddycloud')
+  , Buddycloud = require('../../index')
   , helper     = require('../helper')
 
-var RSM_NS = require('xmpp-ftw/lib/utils/xep-0059').NS
+var RSM_NS = require('xmpp-ftw').utils['xep-0059'].NS
 
 describe('buddycloud', function() {
 
@@ -227,7 +227,7 @@ describe('buddycloud', function() {
                 data[0].id.should.equal('item-1')
                 data[1].id.should.equal('item-2')
                 data[2].id.should.equal('item-3')
- 
+
                 data[0].entry.should.eql({ body: 'item-1-content' })
                 data[1].entry.should.eql({ body: 'item-2-content' })
                 data[2].entry.should.eql({ body: 'item-3-content' })
@@ -300,7 +300,7 @@ describe('buddycloud', function() {
             }
             socket.emit('xmpp.buddycloud.items.replies', {}, callback)
         })
-        
+
         it('Errors when no callback provided', function(done) {
             xmpp.once('stanza', function() {
                 done('Unexpected outgoing stanza')
@@ -394,7 +394,7 @@ describe('buddycloud', function() {
             })
             socket.emit('xmpp.buddycloud.items.replies', request, function() {})
         })
-   
+
         it('Sends expected stanza with RSM applied', function(done) {
             var request = {
                 node: '/user/romeo@example.com/posts',
@@ -488,9 +488,9 @@ describe('buddycloud', function() {
         })
 
     })
-    
+
     describe('Item retrieve', function() {
-        
+
         // Note: Other tests all fallback on those from xmpp-ftw-pubsub
 
         it('Errors if buddycloud server not discovered', function(done) {
@@ -507,7 +507,7 @@ describe('buddycloud', function() {
             }
             socket.emit('xmpp.buddycloud.retrieve', {}, callback)
         })
-        
+
         it('Errors when no callback provided', function(done) {
             xmpp.once('stanza', function() {
                 done('Unexpected outgoing stanza')
@@ -537,7 +537,7 @@ describe('buddycloud', function() {
             })
             socket.emit('xmpp.buddycloud.retrieve', {}, true)
         })
-        
+
         it('Returns RSM element', function(done) {
             xmpp.once('stanza', function() {
                 manager.makeCallback(helper.getStanza('item-replies-rsm'))
@@ -561,7 +561,7 @@ describe('buddycloud', function() {
                 callback
             )
         })
-        
+
         it('Adds node key to each response item', function(done) {
             xmpp.once('stanza', function() {
                 manager.makeCallback(helper.getStanza('item-replies'))
@@ -580,7 +580,7 @@ describe('buddycloud', function() {
                 callback
             )
         })
-        
+
     })
 
     describe('Item thread', function() {
@@ -663,7 +663,7 @@ describe('buddycloud', function() {
             })
             socket.emit('xmpp.buddycloud.items.thread', request, function() {})
         })
-   
+
         it('Sends expected stanza with RSM applied', function(done) {
             var request = {
                 node: '/user/romeo@example.com/posts',
@@ -755,7 +755,7 @@ describe('buddycloud', function() {
                 callback
             )
         })
-        
+
         it('Errors when no callback provided', function(done) {
             xmpp.once('stanza', function() {
                 done('Unexpected outgoing stanza')

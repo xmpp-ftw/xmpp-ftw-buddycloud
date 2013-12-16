@@ -1,5 +1,5 @@
 var should  = require('should')
-  , Buddycloud = require('../../lib/buddycloud')
+  , Buddycloud = require('../../index')
   , ltx     = require('ltx')
   , helper  = require('../helper')
 
@@ -42,7 +42,7 @@ describe('buddycloud', function() {
 
         it('It errors if channel server not discovered', function(done) {
             socket.once('xmpp.error.client', function(error) {
-                error.should.eql({ 
+                error.should.eql({
                     type: 'modify',
                     condition: 'client-error',
                     description: 'You must perform discovery first!',
@@ -53,7 +53,7 @@ describe('buddycloud', function() {
             delete buddycloud.channelServer
             socket.emit('xmpp.buddycloud.presence')
         })
- 
+
         it('Sends expected stanza', function(done) {
             xmpp.once('stanza', function(stanza) {
                 stanza.is('presence').should.be.true

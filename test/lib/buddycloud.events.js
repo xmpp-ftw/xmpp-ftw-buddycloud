@@ -1,5 +1,5 @@
 var should      = require('should')
-  , Buddycloud  = require('../../lib/buddycloud')
+  , Buddycloud = require('../../index')
   , ltx         = require('ltx')
   , helper      = require('../helper')
 
@@ -44,7 +44,7 @@ describe('buddycloud', function() {
               new ltx.parse('<iq from="channels.shakespeare.lit"/>')
           ).should.be.false
        })
-       
+
        it('Doesn\'t handle <iq> packets', function() {
            buddycloud.handles(
              new ltx.parse('<iq from="channels.shakespeare.lit" />')
@@ -60,7 +60,7 @@ describe('buddycloud', function() {
        it('Handles messages with \'event\' namespace', function() {
            var stanza = new ltx.parse(
              '<message from="channels.shakespeare.lit">'
-             + '<event xmlns="' 
+             + '<event xmlns="'
              + buddycloud.NS_EVENT + '" /></message>'
            )
            buddycloud.handles(stanza).should.be.true
@@ -129,7 +129,7 @@ describe('buddycloud', function() {
                 data.should.eql({ type: 'modify',
                     condition: 'client-error',
                     description: 'Badly formatted data form',
-                    request: {} 
+                    request: {}
                 })
                 done()
             })
@@ -154,12 +154,12 @@ describe('buddycloud', function() {
                 dataForm.children[1].attrs.var.should.equal('buddycloud#allow')
                 dataForm.children[1].getChildText('value')
                     .should.equal('true')
-                done()            
+                done()
             })
             var callback = function(data, callback) {
                 callback([
                     { var: 'buddycloud#allow', value: true }
-                ]) 
+                ])
             }
             socket.once('xmpp.buddycloud.push.authorisation', callback)
             buddycloud.handle(stanza)
@@ -241,7 +241,7 @@ describe('buddycloud', function() {
                 })
                 buddycloud.handle(stanza)
             })
- 
+
             it('Handles delete with headers', function(done) {
                 var stanza = new ltx.parse(
                     '<message from="channels.shakespeare.lit">'
@@ -280,7 +280,7 @@ describe('buddycloud', function() {
                 data.node.should.equal('/user/twelfth@night.org/posts')
                 data.subscription.should.equal('subscribed')
                 data.jid.should.eql({
-                    domain: 'example.com', 
+                    domain: 'example.com',
                     user: 'romeo'
                 })
                 done()
@@ -342,7 +342,7 @@ describe('buddycloud', function() {
         })
 
         describe('Node delete', function() {
-        
+
             it('Can handle basic node delete', function(done) {
                 var stanza = new ltx.parse(
                     '<message from="channels.shakespeare.lit">'
@@ -374,7 +374,7 @@ describe('buddycloud', function() {
                 })
                 buddycloud.handle(stanza)
             })
-        
+
         })
 
         it('Node purge notification', function(done) {
@@ -390,7 +390,7 @@ describe('buddycloud', function() {
                 done()
             })
             buddycloud.handle(stanza)
-        }) 
+        })
 
     })
 

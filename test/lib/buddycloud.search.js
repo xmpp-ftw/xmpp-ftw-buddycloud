@@ -1,5 +1,5 @@
 var should  = require('should')
-  , Buddycloud = require('../../lib/buddycloud')
+  , Buddycloud = require('../../index')
   , helper  = require('../helper')
 
 describe('buddycloud', function() {
@@ -33,7 +33,7 @@ describe('buddycloud', function() {
     })
 
     it('Parses entry XML to expected format', function(done) {
-        
+
             var payload = {
                 form: [
                     { var: 'content', value: 'test' }
@@ -58,21 +58,21 @@ describe('buddycloud', function() {
                     label: 'Item',
                     type: 'xml'
                 })
-                
+
                 data.results.length.should.equal(2)
                 var results = data.results
 
                 results[0].node.should.equal('/user/romeo@montague.lit/posts')
                 results[0].id.should.equal('5w382609806986536982502859083409')
                 results[0].entry.body.should.equal('Hello World')
-                
+
                 results[1].node.should.equal('/user/juliet@capulet.lit/posts')
                 results[1].id.should.equal('fg455g542hg4hhtfgh4554hg5g5g54h4F')
                 results[1].entry.body.should.equal('Hello Everyone')
-                
+
                 done()
             }
             socket.emit('xmpp.buddycloud.search.do', payload, callback)
     })
-    
+
 })

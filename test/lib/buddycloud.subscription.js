@@ -1,5 +1,5 @@
 var should      = require('should')
-  , Buddycloud  = require('../../lib/buddycloud')
+  , Buddycloud = require('../../index')
   , ltx         = require('ltx')
   , helper      = require('../helper')
 
@@ -32,7 +32,7 @@ describe('Buddycloud', function() {
         buddycloud = new Buddycloud()
         buddycloud.init(manager)
     })
-    
+
     beforeEach(function() {
       buddycloud.channelServer = 'channels.shakespeare.lit'
     })
@@ -79,12 +79,12 @@ describe('Buddycloud', function() {
                     description: 'You must perform discovery first!',
                     request: {}
                 })
-                done()                
+                done()
             })
         })
-        
+
         it('Sends expected stanza', function(done) {
-            var request = { 
+            var request = {
               node: '/user/twelfth@night.org/posts',
               jid: 'juliet@shakespeare.lit',
               subscription: 'subscribed'
@@ -99,7 +99,7 @@ describe('Buddycloud', function() {
                     .getChild('subscriptions')
                 subscriptions.should.exist
                 subscriptions.attrs.node.should.equal(request.node)
-                
+
                 var subscription = subscriptions.getChild('subscription')
                 subscription.attrs.jid.should.equal(request.jid)
                 subscription.attrs.subscription
@@ -122,7 +122,7 @@ describe('Buddycloud', function() {
                 })
                 done()
             }
-            var request = { 
+            var request = {
               node: '/user/twelfth@night.org/posts',
               jid: 'juliet@shakespeare.lit',
               subscription: 'subscribed'
@@ -143,7 +143,7 @@ describe('Buddycloud', function() {
                 success.should.be.true
                 done()
             }
-            var request = { 
+            var request = {
               node: '/user/twelfth@night.org/posts',
               jid: 'juliet@shakespeare.lit',
               subscription: 'subscribed'
@@ -156,5 +156,5 @@ describe('Buddycloud', function() {
         })
 
     })
-    
+
 })
