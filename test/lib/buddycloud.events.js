@@ -181,7 +181,8 @@ describe('buddycloud', function() {
                 )
                 socket.once('xmpp.buddycloud.push.item', function(data) {
                     should.not.exist(data.from)
-                    data.node.should.equal('/user/twelfth@night.org/posts')
+                    data.channel.should.equal('twelfth@night.org')
+                    data.node.should.equal('posts')
                     data.id.should.equal('item-5')
                     done()
                 })

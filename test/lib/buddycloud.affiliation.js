@@ -45,7 +45,7 @@ describe('buddycloud', function() {
             socket.once('xmpp.error.client', function(error) {
                 error.type.should.equal('modify')
                 error.condition.should.equal('client-error')
-                error.description.should.equal("Missing callback")
+                error.description.should.equal('Missing callback')
                 error.request.should.eql({})
                 xmpp.removeAllListeners('stanza')
                 done()
@@ -107,7 +107,7 @@ describe('buddycloud', function() {
                 done()
             }
             var request = {
-                node: '/user/romeo@example.com/post',
+                channel: 'romeo@example.com'
             }
             socket.emit(
                 'xmpp.buddycloud.affiliations',
@@ -123,13 +123,15 @@ describe('buddycloud', function() {
             var callback = function(error, success) {
                 should.not.exist(error)
                 success.length.should.equal(2)
-                success[0].node.should.equal('/user/romeo@example.com/posts')
+                success[0].channel.should.equal('romeo@example.com')
+                success[0].node.should.equal('posts')
                 success[0].jid.should.eql({
                     domain: 'example.com',
                     user: 'romeo'
                 })
                 success[0].affiliation.should.equal('owner')
-                success[1].node.should.equal('/user/juliet@example.net/posts')
+                success[1].channel.should.equal('juliet@example.net')
+                success[1].node.should.equal('posts')
                 success[1].jid.should.eql({
                     domain: 'example.com',
                     user: 'romeo'
@@ -219,7 +221,8 @@ describe('buddycloud', function() {
 
         it('Sends expected stanza', function(done) {
             var request = {
-               node: '/user/romeo@shakespeare.lit/posts',
+               channel: 'romeo@shakespeare.lit',
+               node: 'status',
                affiliation: 'publisher',
                jid: 'juliet@shakespeare.lit'
             }
@@ -231,8 +234,9 @@ describe('buddycloud', function() {
                 pubsub.should.exist
                 var affiliations = pubsub.getChild('affiliations')
                 affiliations.should.exist
-                affiliations.attrs.node.should.equal(request.node)
-
+                affiliations.attrs.node.should.equal(
+                    '/users/romeo@shakespeare.lit/status'
+                )
                 var affiliation = affiliations.getChild('affiliation')
                 affiliation.should.exist
                 affiliation.attrs.affiliation.should.equal(request.affiliation)
