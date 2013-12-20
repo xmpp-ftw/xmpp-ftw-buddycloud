@@ -1,7 +1,10 @@
+'use strict';
+
 var should  = require('should')
   , Buddycloud = require('../../index')
   , helper  = require('../helper')
 
+/* jshint -W030 */
 describe('buddycloud', function() {
 
     var buddycloud, socket, xmpp, manager
@@ -73,6 +76,6 @@ describe('buddycloud', function() {
                 done()
             }
             socket.emit('xmpp.buddycloud.search.do', payload, callback)
-    })
+        })
 
 })

@@ -1,8 +1,10 @@
+'use strict';
+
 var should  = require('should')
   , Buddycloud = require('../../index')
-  , ltx     = require('ltx')
   , helper  = require('../helper')
 
+/* jshint -W030 */
 describe('buddycloud', function() {
 
     var buddycloud, socket, xmpp, manager
@@ -33,7 +35,7 @@ describe('buddycloud', function() {
     })
 
     beforeEach(function() {
-      buddycloud.channelServer = 'channels.shakespeare.lit'
+        buddycloud.channelServer = 'channels.shakespeare.lit'
     })
 
     describe('Register', function() {
@@ -54,18 +56,18 @@ describe('buddycloud', function() {
         })
 
         it('Sends expected stanza', function(done) {
-          xmpp.once('stanza', function(stanza) {
-            stanza.is('iq').should.be.true
-            stanza.attrs.to.should.equal('channels.shakespeare.lit')
-            stanza.attrs.id.should.exist
-            stanza.getChild('query', 'jabber:iq:register').should.exist
-            done()
-          })
-          socket.emit(
-              'xmpp.buddycloud.register',
-              {},
-              function() {}
-          )
+            xmpp.once('stanza', function(stanza) {
+                stanza.is('iq').should.be.true
+                stanza.attrs.to.should.equal('channels.shakespeare.lit')
+                stanza.attrs.id.should.exist
+                stanza.getChild('query', 'jabber:iq:register').should.exist
+                done()
+            })
+            socket.emit(
+                'xmpp.buddycloud.register',
+                {},
+                function() {}
+            )
         })
     })
 

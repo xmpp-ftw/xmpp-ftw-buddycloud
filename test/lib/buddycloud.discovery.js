@@ -1,8 +1,10 @@
+'use strict';
+
 var should  = require('should')
   , Buddycloud = require('../../index')
-  , ltx     = require('ltx')
   , helper  = require('../helper')
 
+/* jshint -W030 */
 describe('buddycloud', function() {
 
     var buddycloud, socket, xmpp, manager
@@ -39,14 +41,14 @@ describe('buddycloud', function() {
 
     describe('Channel server discover', function() {
 
-         it('Errors when no callback provided', function(done) {
+        it('Errors when no callback provided', function(done) {
             xmpp.once('stanza', function() {
                 done('Unexpected outgoing stanza')
             })
             socket.once('xmpp.error.client', function(error) {
                 error.type.should.equal('modify')
                 error.condition.should.equal('client-error')
-                error.description.should.equal("Missing callback")
+                error.description.should.equal('Missing callback')
                 error.request.should.eql({})
                 xmpp.removeAllListeners('stanza')
                 done()
@@ -61,7 +63,7 @@ describe('buddycloud', function() {
             socket.once('xmpp.error.client', function(error) {
                 error.type.should.equal('modify')
                 error.condition.should.equal('client-error')
-                error.description.should.equal("Missing callback")
+                error.description.should.equal('Missing callback')
                 error.request.should.eql({})
                 xmpp.removeAllListeners('stanza')
                 done()
@@ -97,7 +99,7 @@ describe('buddycloud', function() {
         })
 
         it('Handles disco#items and sends expected stanzas', function(done) {
-            xmpp.once('stanza', function(stanza) {
+            xmpp.once('stanza', function() {
                 var discoInfoRequests = 0
                 xmpp.on('stanza', function(stanza) {
                     stanza.is('iq').should.be.true
@@ -106,7 +108,7 @@ describe('buddycloud', function() {
                     stanza.attrs.id.should.exist
                     stanza.getChild('query', buddycloud.disco.NS_INFO)
                         .should.exist
-                    ++discoInfoRequests
+                    discoInfoRequests++
                     if (discoInfoRequests >= 2) done()
                 })
                 manager.makeCallback(helper.getStanza('disco-items'))
@@ -115,8 +117,7 @@ describe('buddycloud', function() {
         })
 
         it('Handles error responses; returns failure', function(done) {
-            xmpp.once('stanza', function(stanza) {
-                var discoInfoRequests = 0
+            xmpp.once('stanza', function() {
                 xmpp.on('stanza', function(stanza) {
                     var errorReply = helper.getStanza('iq-error')
                     errorReply.attrs.id = stanza.attrs.id
@@ -132,7 +133,7 @@ describe('buddycloud', function() {
         })
 
         it('Handles disco#info responses; returns failure', function(done) {
-            xmpp.once('stanza', function(stanza) {
+            xmpp.once('stanza', function() {
                 xmpp.on('stanza', function(stanza) {
                     var infoReply = helper.getStanza('disco-info')
                     infoReply.attrs.id = stanza.attrs.id
@@ -149,9 +150,9 @@ describe('buddycloud', function() {
 
 
         it('Handles disco#info responses; returns failure', function(done) {
-            xmpp.once('stanza', function(stanza) {
+            xmpp.once('stanza', function() {
                 var discoInfoRequests = 0
-                xmpp.on('stanza', function(stanza) {
+                xmpp.on('stanza', function() {
                     ++discoInfoRequests
                     if (1 === discoInfoRequests)
                         return manager.makeCallback(
@@ -173,8 +174,8 @@ describe('buddycloud', function() {
 
         it('Handles unresponsive components', function(done) {
             buddycloud.setDiscoveryTimeout(1)
-            xmpp.once('stanza', function(stanza) {
-                xmpp.on('stanza', function(stanza) {
+            xmpp.once('stanza', function() {
+                xmpp.on('stanza', function() {
                     // ...do nothing...
                 })
                 manager.makeCallback(helper.getStanza('disco-items'))
@@ -190,15 +191,14 @@ describe('buddycloud', function() {
             buddycloud.setDiscoveryTimeout(0)
             xmpp.on('stanza', function(stanza) {
                 if (-1 !== stanza.toString().indexOf('disco#items')) {
-                  manager.makeCallback(helper.getStanza('disco-items'))
-                  setTimeout(function() {
-                    done()
-                  }, 3)
+                    manager.makeCallback(helper.getStanza('disco-items'))
+                    setTimeout(function() {
+                        done()
+                    }, 3)
                 }
                 setTimeout(function() {
-                  manager.makeCallback(helper.getStanza('disco-info'))
+                    manager.makeCallback(helper.getStanza('disco-info'))
                 }, 2)
-
             })
             socket.emit('xmpp.buddycloud.discover', {}, function(error, item) {
                 should.not.exist(item)
@@ -214,7 +214,7 @@ describe('buddycloud', function() {
             xmpp.once('stanza', function() {
                 done('Unexpected outgoing stanza')
             })
-            var callback = function(error, data) {
+            var callback = function() {
                 done()
             }
             socket.emit('xmpp.buddycloud.discover.info', {}, callback)
@@ -224,7 +224,7 @@ describe('buddycloud', function() {
             xmpp.once('stanza', function() {
                 done('Unexpected outgoing stanza')
             })
-            var callback = function(error, data) {
+            var callback = function() {
                 done()
             }
             socket.emit('xmpp.buddycloud.discover.items', {}, callback)

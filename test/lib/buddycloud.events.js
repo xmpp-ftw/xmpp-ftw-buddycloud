@@ -1,8 +1,11 @@
+'use strict';
+
 var should      = require('should')
   , Buddycloud = require('../../index')
   , ltx         = require('ltx')
   , helper      = require('../helper')
 
+/* jshint -W030 */
 describe('buddycloud', function() {
 
     var buddycloud, socket, xmpp, manager
@@ -34,56 +37,56 @@ describe('buddycloud', function() {
 
     describe('Handles certain packets', function() {
 
-       beforeEach(function() {
-           buddycloud.channelServer = 'channels.shakespeare.lit'
-       })
+        beforeEach(function() {
+            buddycloud.channelServer = 'channels.shakespeare.lit'
+        })
 
-       it('Doesn\'t handle packets if server not discovered', function() {
-          delete buddycloud.channelServer
-          buddycloud.handles(
-              new ltx.parse('<iq from="channels.shakespeare.lit"/>')
-          ).should.be.false
-       })
+        it('Doesn\'t handle packets if server not discovered', function() {
+            delete buddycloud.channelServer
+            buddycloud.handles(
+                new ltx.parse('<iq from="channels.shakespeare.lit"/>')
+            ).should.be.false
+        })
 
-       it('Doesn\'t handle <iq> packets', function() {
-           buddycloud.handles(
-             new ltx.parse('<iq from="channels.shakespeare.lit" />')
-           ).should.be.false
-       })
+        it('Doesn\'t handle <iq> packets', function() {
+            buddycloud.handles(
+                new ltx.parse('<iq from="channels.shakespeare.lit" />')
+            ).should.be.false
+        })
 
-       it('Doesn\'t handle <presence> packets', function() {
-           buddycloud.handles(
-               new ltx.parse('<presence from="channels.shakespeare.lit"/>')
-           ).should.be.false
-       })
+        it('Doesn\'t handle <presence> packets', function() {
+            buddycloud.handles(
+                new ltx.parse('<presence from="channels.shakespeare.lit"/>')
+            ).should.be.false
+        })
 
-       it('Handles messages with \'event\' namespace', function() {
-           var stanza = new ltx.parse(
-             '<message from="channels.shakespeare.lit">'
-             + '<event xmlns="'
-             + buddycloud.NS_EVENT + '" /></message>'
-           )
-           buddycloud.handles(stanza).should.be.true
-       })
+        it('Handles messages with \'event\' namespace', function() {
+            var stanza = new ltx.parse(
+                '<message from="channels.shakespeare.lit">' +
+                '<event xmlns="' +
+                buddycloud.NS_EVENT + '" /></message>'
+            )
+            buddycloud.handles(stanza).should.be.true
+        })
 
-       it('Handles authorisation requests', function() {
-           var stanza = new ltx.parse(
-               '<message from="channels.shakespeare.lit">'
-               + '<x><field type="hidden"><value>'
-               + buddycloud.NS_SUBSCRIBE_AUTHORISATION
-               + '</value></field></x></message>'
-           )
-           buddycloud.handles(stanza).should.be.true
-       })
+        it('Handles authorisation requests', function() {
+            var stanza = new ltx.parse(
+                '<message from="channels.shakespeare.lit">' +
+                '<x><field type="hidden"><value>' +
+                buddycloud.NS_SUBSCRIBE_AUTHORISATION +
+                '</value></field></x></message>'
+            )
+            buddycloud.handles(stanza).should.be.true
+        })
 
-       it('Doesn\'t handle other messages', function() {
-           var stanza = new ltx.parse(
-             '<message from="channels.shakespeare.lit">'
-             + '<event xmlns="'
-             + buddycloud.NS_PUBSUB + '" /></message>'
-           )
-           buddycloud.handles(stanza).should.be.false
-       })
+        it('Doesn\'t handle other messages', function() {
+            var stanza = new ltx.parse(
+                '<message from="channels.shakespeare.lit">' +
+                '<event xmlns="' +
+                buddycloud.NS_PUBSUB + '" /></message>'
+            )
+            buddycloud.handles(stanza).should.be.false
+        })
 
     })
 
@@ -173,11 +176,11 @@ describe('buddycloud', function() {
 
             it('Handles basic item notification', function(done) {
                 var stanza = new ltx.parse(
-                    '<message from="channels.shakespeare.lit">'
-                    + '<event xmlns="' + buddycloud.NS_EVENT + '">'
-                    + '<items node="/user/twelfth@night.org/posts">'
-                    + '<item id="item-5"></item>'
-                    + '</items></event></message>'
+                    '<message from="channels.shakespeare.lit">' +
+                    '<event xmlns="' + buddycloud.NS_EVENT + '">' +
+                    '<items node="/user/twelfth@night.org/posts">' +
+                    '<item id="item-5"></item>' +
+                    '</items></event></message>'
                 )
                 socket.once('xmpp.buddycloud.push.item', function(data) {
                     should.not.exist(data.from)
@@ -226,12 +229,12 @@ describe('buddycloud', function() {
 
             it('Handles a delete', function(done) {
                 var stanza = new ltx.parse(
-                    '<message from="channels.shakespeare.lit">'
-                    + '<event xmlns="' + buddycloud.NS_EVENT + '">'
-                    + '<items node="/user/twelfth@night.org/posts">'
-                        + '<retract id="item-5" />'
-                    + '</items></event>'
-                    + '</message>'
+                    '<message from="channels.shakespeare.lit">' +
+                    '<event xmlns="' + buddycloud.NS_EVENT + '">' +
+                    '<items node="/user/twelfth@night.org/posts">' +
+                        '<retract id="item-5" />' +
+                    '</items></event>' +
+                    '</message>'
                 )
                 socket.once('xmpp.buddycloud.push.retract', function(data) {
                     should.not.exist(data.from)
@@ -269,11 +272,11 @@ describe('buddycloud', function() {
 
         it('Passes on subscription updates', function(done) {
             var stanza = new ltx.parse(
-                '<message from="channels.shakespeare.lit">'
-                + '<event xmlns="' + buddycloud.NS_EVENT + '">'
-                + '<subscription subscription="subscribed" '
-                    + 'node="/user/twelfth@night.org/posts" jid="romeo@example.com" />'
-                + '</event></message>'
+                '<message from="channels.shakespeare.lit">' +
+                '<event xmlns="' + buddycloud.NS_EVENT + '">' +
+                '<subscription subscription="subscribed" ' +
+                    'node="/user/twelfth@night.org/posts"  jid="romeo@example.com" />' +
+                '</event></message>'
             )
             socket.once('xmpp.buddycloud.push.subscription', function(data) {
                 should.not.exist(data.from)
@@ -290,13 +293,13 @@ describe('buddycloud', function() {
 
         it('Passes on affiliation change', function(done) {
             var stanza = new ltx.parse(
-                '<message from="channels.shakespeare.lit">'
-                + '<event xmlns="' + buddycloud.NS_EVENT + '">'
-                + '<affiliations node="/user/twelfth@night.org/posts">'
-                    + '<affiliation affiliation="publisher" '
-                                 + 'jid="romeo@example.com" />'
-                + '</affiliations>'
-                + '</event></message>'
+                '<message from="channels.shakespeare.lit">' +
+                '<event xmlns="' + buddycloud.NS_EVENT + '">' +
+                '<affiliations node="/user/twelfth@night.org/posts">' +
+                    '<affiliation affiliation="publisher" ' +
+                                 'jid="romeo@example.com" />' +
+                '</affiliations>' +
+                '</event></message>'
             )
             socket.once('xmpp.buddycloud.push.affiliation', function(data) {
                 should.not.exist(data.from)
@@ -313,20 +316,20 @@ describe('buddycloud', function() {
 
         it('Handles configuration changes', function(done) {
             var stanza = new ltx.parse(
-                '<message from="channels.shakespeare.lit">'
-                + '<event xmlns="' + buddycloud.NS_EVENT + '">'
-                + '<configuration node="/user/twelfth@night.org/posts">'
-                + '<x xmlns="jabber:x:data" type="result">'
-                    + '<field var="FORM_TYPE" type="hidden">'
-                    + '<value>'
-                        + 'http://jabber.org/protocol/buddycloud#node_config'
-                        + '</value>'
-                    + '</field>'
-                    + '<field var="buddycloud#title">'
-                        + '<value>A great comedy</value>'
-                    + '</field>'
-                + '</x>'
-                + '</configuration></event></message>'
+                '<message from="channels.shakespeare.lit">' +
+                '<event xmlns="' + buddycloud.NS_EVENT + '">' +
+                '<configuration node="/user/twelfth@night.org/posts">' +
+                '<x xmlns="jabber:x:data" type="result">' +
+                    '<field var="FORM_TYPE" type="hidden">' +
+                    '<value>' +
+                         'http://jabber.org/protocol/buddycloud#node_config' +
+                        '</value>' +
+                    '</field>' +
+                    '<field var="buddycloud#title">' +
+                        '<value>A great comedy</value>' +
+                    '</field>' +
+                '</x>' +
+                '</configuration></event></message>'
             )
             socket.once('xmpp.buddycloud.push.configuration', function(data) {
                 should.not.exist(data.from)
@@ -345,10 +348,10 @@ describe('buddycloud', function() {
 
             it('Can handle basic node delete', function(done) {
                 var stanza = new ltx.parse(
-                    '<message from="channels.shakespeare.lit">'
-                    + '<event xmlns="' + buddycloud.NS_EVENT + '">'
-                    + '<delete node="/user/twelfth@night.org/posts"/>'
-                    + '</event></message>'
+                    '<message from="channels.shakespeare.lit">' +
+                    '<event xmlns="' + buddycloud.NS_EVENT + '">' +
+                    '<delete node="/user/twelfth@night.org/posts"/>' +
+                    '</event></message>'
                 )
                 socket.once('xmpp.buddycloud.push.delete', function(data) {
                     should.not.exist(data.from)
@@ -360,11 +363,11 @@ describe('buddycloud', function() {
 
             it('Can handle node delete with redirect', function(done) {
                 var stanza = new ltx.parse(
-                    '<message from="channels.shakespeare.lit">'
-                    + '<event xmlns="' + buddycloud.NS_EVENT + '">'
-                    + '<delete node="/user/twelfth@night.org/posts">'
-                    + '<redirect uri="buddycloud.marlowe.lit?node=dido" />'
-                    + '</delete></event></message>'
+                    '<message from="channels.shakespeare.lit">' +
+                    '<event xmlns="' + buddycloud.NS_EVENT + '">' +
+                    '<delete node="/user/twelfth@night.org/posts">' +
+                    '<redirect uri="buddycloud.marlowe.lit?node=dido" />' +
+                    '</delete></event></message>'
                 )
                 socket.once('xmpp.buddycloud.push.delete', function(data) {
                     should.not.exist(data.from)
@@ -379,10 +382,10 @@ describe('buddycloud', function() {
 
         it('Node purge notification', function(done) {
             var stanza = new ltx.parse(
-                '<message from="channels.shakespeare.lit">'
-                + '<event xmlns="' + buddycloud.NS_EVENT + '">'
-                + '<purge node="/user/twelfth@night.org/posts"/>'
-                + '</event></message>'
+                '<message from="channels.shakespeare.lit">' +
+                '<event xmlns="' + buddycloud.NS_EVENT + '">' +
+                '<purge node="/user/twelfth@night.org/posts"/>' +
+                '</event></message>'
             )
             socket.once('xmpp.buddycloud.push.purge', function(data) {
                 should.not.exist(data.from)

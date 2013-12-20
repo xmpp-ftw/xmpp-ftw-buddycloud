@@ -1,8 +1,10 @@
+'use strict';
+
 var should      = require('should')
   , Buddycloud = require('../../index')
-  , ltx         = require('ltx')
   , helper      = require('../helper')
 
+/* jshint -W030 */
 describe('Buddycloud', function() {
 
     var buddycloud, socket, xmpp, manager
@@ -39,56 +41,56 @@ describe('Buddycloud', function() {
 
     describe('Subscription', function() {
 
-         it('Errors when no callback provided', function(done) {
-             xmpp.once('stanza', function() {
-                done('Unexpected outgoing stanza')
-            })
-            socket.once('xmpp.error.client', function(error) {
-                error.type.should.equal('modify')
-                error.condition.should.equal('client-error')
-                error.description.should.equal("Missing callback")
-                error.request.should.eql({})
-                xmpp.removeAllListeners('stanza')
-                done()
-            })
-            socket.emit('xmpp.buddycloud.subscription', {})
-        })
-
-        it('Errors when non-function callback provided', function(done) {
-            xmpp.once('stanza', function() {
-                done('Unexpected outgoing stanza')
-            })
-            socket.once('xmpp.error.client', function(error) {
-                error.type.should.equal('modify')
-                error.condition.should.equal('client-error')
-                error.description.should.equal("Missing callback")
-                error.request.should.eql({})
-                xmpp.removeAllListeners('stanza')
-                done()
-            })
-            socket.emit('xmpp.buddycloud.subscription', {}, true)
-        })
-
-        it('Complains if discovery hasn\'t taken place', function(done) {
-            delete buddycloud.channelServer
-            socket.emit('xmpp.buddycloud.subscription', {}, function(error, data) {
-                should.not.exist(data)
-                error.should.eql({
-                    type: 'modify',
-                    condition: 'client-error',
-                    description: 'You must perform discovery first!',
-                    request: {}
+            it('Errors when no callback provided', function(done) {
+                 xmpp.once('stanza', function() {
+                    done('Unexpected outgoing stanza')
                 })
-                done()
+                socket.once('xmpp.error.client', function(error) {
+                    error.type.should.equal('modify')
+                    error.condition.should.equal('client-error')
+                    error.description.should.equal("Missing callback")
+                    error.request.should.eql({})
+                    xmpp.removeAllListeners('stanza')
+                    done()
+                })
+                socket.emit('xmpp.buddycloud.subscription', {})
             })
-        })
 
-        it('Sends expected stanza', function(done) {
-            var request = {
-              node: '/user/twelfth@night.org/posts',
-              jid: 'juliet@shakespeare.lit',
-              subscription: 'subscribed'
-            }
+            it('Errors when non-function callback provided', function(done) {
+                xmpp.once('stanza', function() {
+                    done('Unexpected outgoing stanza')
+                })
+                socket.once('xmpp.error.client', function(error) {
+                    error.type.should.equal('modify')
+                    error.condition.should.equal('client-error')
+                    error.description.should.equal("Missing callback")
+                    error.request.should.eql({})
+                    xmpp.removeAllListeners('stanza')
+                    done()
+                })
+                socket.emit('xmpp.buddycloud.subscription', {}, true)
+            })
+
+            it('Complains if discovery hasn\'t taken place', function(done) {
+                delete buddycloud.channelServer
+                socket.emit('xmpp.buddycloud.subscription', {}, function(error, data) {
+                    should.not.exist(data)
+                    error.should.eql({
+                       type: 'modify',
+                        condition: 'client-error',
+                        description: 'You must perform discovery first!',
+                        request: {}
+                    })
+                    done()
+                })
+            })
+
+            it('Sends expected stanza', function(done) {
+                var request = {
+                    node: '/user/twelfth@night.org/posts',
+                    jid: 'juliet@shakespeare.lit',
+                    subscription: 'subscribed'
+                }
             xmpp.once('stanza', function(stanza) {
                 stanza.is('iq').should.be.true
                 stanza.attrs.to.should.equal(buddycloud.channelServer)
@@ -110,23 +112,23 @@ describe('Buddycloud', function() {
             socket.emit('xmpp.buddycloud.subscription', request, function() {})
         })
 
-        it('Handles an error stanza response', function(done) {
-            xmpp.once('stanza', function(stanza) {
-                manager.makeCallback(helper.getStanza('iq-error'))
-            })
-            var callback = function(error, success) {
-                should.not.exist(success)
-                error.should.eql({
-                    type: 'cancel',
-                    condition: 'error-condition'
+            it('Handles an error stanza response', function(done) {
+                xmpp.once('stanza', function() {
+                    manager.makeCallback(helper.getStanza('iq-error'))
                 })
-                done()
-            }
-            var request = {
-              node: '/user/twelfth@night.org/posts',
-              jid: 'juliet@shakespeare.lit',
-              subscription: 'subscribed'
-            }
+                var callback = function(error, success) {
+                    should.not.exist(success)
+                    error.should.eql({
+                        type: 'cancel',
+                        condition: 'error-condition'
+                    })
+                    done()
+                }
+                var request = {
+                  node: '/user/twelfth@night.org/posts',
+                  jid: 'juliet@shakespeare.lit',
+                  subscription: 'subscribed'
+                }
             socket.emit(
                 'xmpp.buddycloud.subscription',
                 request,
@@ -134,27 +136,27 @@ describe('Buddycloud', function() {
             )
         })
 
-        it('Handles basic success response', function(done) {
-            xmpp.once('stanza', function(stanza) {
-                manager.makeCallback(helper.getStanza('subscribe-basic'))
+           it('Handles basic success response', function(done) {
+                xmpp.once('stanza', function() {
+                    manager.makeCallback(helper.getStanza('subscribe-basic'))
+                })
+                var callback = function(error, success) {
+                    should.not.exist(error)
+                    success.should.be.true
+                    done()
+                }
+                var request = {
+                    node: '/user/twelfth@night.org/posts',
+                    jid: 'juliet@shakespeare.lit',
+                    subscription: 'subscribed'
+                }
+                socket.emit(
+                    'xmpp.buddycloud.subscription',
+                    request,
+                    callback
+                )
             })
-            var callback = function(error, success) {
-                should.not.exist(error)
-                success.should.be.true
-                done()
-            }
-            var request = {
-              node: '/user/twelfth@night.org/posts',
-              jid: 'juliet@shakespeare.lit',
-              subscription: 'subscribed'
-            }
-            socket.emit(
-                'xmpp.buddycloud.subscription',
-                request,
-                callback
-            )
-        })
 
-    })
+        })
 
 })

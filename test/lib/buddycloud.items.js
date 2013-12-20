@@ -1,9 +1,12 @@
+'use strict';
+
 var should     = require('should')
   , Buddycloud = require('../../index')
   , helper     = require('../helper')
 
 var RSM_NS = require('xmpp-ftw').utils['xep-0059'].NS
 
+/* jshint -W030 */
 describe('buddycloud', function() {
 
     var buddycloud, socket, xmpp, manager

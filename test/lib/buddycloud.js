@@ -1,8 +1,9 @@
-var should  = require('should')
-  , Buddycloud = require('../../index')
-  , ltx     = require('ltx')
+'use strict';
+
+var Buddycloud = require('../../index')
   , helper  = require('../helper')
 
+/* jshint -W030 */
 describe('buddycloud', function() {
 
     var buddycloud, socket, xmpp, manager
@@ -28,7 +29,7 @@ describe('buddycloud', function() {
                 }
             }
         }
-        buddycloud = new buddycloud()
+        buddycloud = new Buddycloud()
         buddycloud.init(manager)
     })
 

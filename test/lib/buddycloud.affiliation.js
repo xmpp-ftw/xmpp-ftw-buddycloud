@@ -1,8 +1,10 @@
+'use strict';
+
 var should  = require('should')
   , Buddycloud = require('../../index')
-  , ltx     = require('ltx')
   , helper  = require('../helper')
 
+/* jshint -W030 */
 describe('buddycloud', function() {
 
     var buddycloud, socket, xmpp, manager
@@ -45,7 +47,7 @@ describe('buddycloud', function() {
             socket.once('xmpp.error.client', function(error) {
                 error.type.should.equal('modify')
                 error.condition.should.equal('client-error')
-                error.description.should.equal("Missing callback")
+                error.description.should.equal('Missing callback')
                 error.request.should.eql({})
                 xmpp.removeAllListeners('stanza')
                 done()
@@ -60,7 +62,7 @@ describe('buddycloud', function() {
             socket.once('xmpp.error.client', function(error) {
                 error.type.should.equal('modify')
                 error.condition.should.equal('client-error')
-                error.description.should.equal("Missing callback")
+                error.description.should.equal('Missing callback')
                 error.request.should.eql({})
                 xmpp.removeAllListeners('stanza')
                 done()
@@ -95,7 +97,7 @@ describe('buddycloud', function() {
         })
 
         it('Handles an error reply', function(done) {
-            xmpp.once('stanza', function(stanza) {
+            xmpp.once('stanza', function() {
                 manager.makeCallback(helper.getStanza('iq-error'))
             })
             var callback = function(error, success) {
@@ -117,7 +119,7 @@ describe('buddycloud', function() {
         })
 
         it('Returns data in expected format', function(done) {
-            xmpp.once('stanza', function(stanza) {
+            xmpp.once('stanza', function() {
                 manager.makeCallback(helper.getStanza('affiliations'))
             })
             var callback = function(error, success) {
@@ -146,7 +148,7 @@ describe('buddycloud', function() {
         })
 
         it('Returns RSM element', function(done) {
-            xmpp.once('stanza', function(stanza) {
+            xmpp.once('stanza', function() {
                 manager.makeCallback(helper.getStanza('affiliations-with-rsm'))
             })
             var callback = function(error, success, rsm) {
@@ -180,7 +182,7 @@ describe('buddycloud', function() {
             socket.once('xmpp.error.client', function(error) {
                 error.type.should.equal('modify')
                 error.condition.should.equal('client-error')
-                error.description.should.equal("Missing callback")
+                error.description.should.equal('Missing callback')
                 error.request.should.eql({})
                 xmpp.removeAllListeners('stanza')
                 done()
@@ -195,7 +197,7 @@ describe('buddycloud', function() {
             socket.once('xmpp.error.client', function(error) {
                 error.type.should.equal('modify')
                 error.condition.should.equal('client-error')
-                error.description.should.equal("Missing callback")
+                error.description.should.equal('Missing callback')
                 error.request.should.eql({})
                 xmpp.removeAllListeners('stanza')
                 done()
@@ -219,9 +221,9 @@ describe('buddycloud', function() {
 
         it('Sends expected stanza', function(done) {
             var request = {
-               node: '/user/romeo@shakespeare.lit/posts',
-               affiliation: 'publisher',
-               jid: 'juliet@shakespeare.lit'
+                node: '/user/romeo@shakespeare.lit/posts',
+                affiliation: 'publisher',
+                jid: 'juliet@shakespeare.lit'
             }
             xmpp.once('stanza', function(stanza) {
                 stanza.is('iq').should.be.true
