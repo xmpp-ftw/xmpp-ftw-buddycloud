@@ -48,7 +48,7 @@ describe('Buddycloud', function() {
                 socket.once('xmpp.error.client', function(error) {
                     error.type.should.equal('modify')
                     error.condition.should.equal('client-error')
-                    error.description.should.equal("Missing callback")
+                    error.description.should.equal('Missing callback')
                     error.request.should.eql({})
                     xmpp.removeAllListeners('stanza')
                     done()
@@ -63,7 +63,7 @@ describe('Buddycloud', function() {
                 socket.once('xmpp.error.client', function(error) {
                     error.type.should.equal('modify')
                     error.condition.should.equal('client-error')
-                    error.description.should.equal("Missing callback")
+                    error.description.should.equal('Missing callback')
                     error.request.should.eql({})
                     xmpp.removeAllListeners('stanza')
                     done()

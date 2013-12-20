@@ -94,7 +94,7 @@ describe('buddycloud', function() {
 
         it('Sends expected data', function(done) {
             var stanza = helper.getStanza('subscription-authorisation')
-            var callback = function(data, callback) {
+            var callback = function(data) {
                 data.id.should.equal('1')
                 should.not.exist(data.from)
                 data.form.title.should.equal('Subscription request')
@@ -193,24 +193,24 @@ describe('buddycloud', function() {
 
             it('Handles full item notification', function(done) {
                 var stanza = new ltx.parse(
-                    '<message from="channels.shakespeare.lit">'
-                    + '<event xmlns="' + buddycloud.NS_EVENT + '">'
-                    + '<items node="/user/twelfth@night.org/posts">'
-                        + '<item id="item-5" publisher="romeo@example.com">'
-                            + '<body>item-5-content</body>'
-                        + '</item>'
-                    + '</items></event>'
-                    + '<delay stamp="2013-06-23 20:00:00+0100" />'
-                    + '<headers xmlns="' + buddycloud.NS_HEADERS + '">'
-                        + '<header name="key">value</header>'
-                    + '</headers>'
-                    + '</message>'
+                    '<message from="channels.shakespeare.lit">' +
+                    '<event xmlns="' + buddycloud.NS_EVENT + '">' +
+                    '<items node="/user/twelfth@night.org/posts">' +
+                        '<item id="item-5" publisher="romeo@example.com">' +
+                            '<body>item-5-content</body>' +
+                        '</item>' +
+                    '</items></event>' +
+                    '<delay stamp="2013-06-23 20:00:00+0100" />' +
+                    '<headers xmlns="' + buddycloud.NS_HEADERS + '">' +
+                        '<header name="key">value</header>' +
+                    '</headers>' +
+                    '</message>'
                 )
                 socket.once('xmpp.buddycloud.push.item', function(data) {
                     should.not.exist(data.from)
                     data.node.should.equal('/user/twelfth@night.org/posts')
                     data.entry.should.eql({ body: 'item-5-content' })
-                    data.delay.should.equal("2013-06-23 20:00:00+0100")
+                    data.delay.should.equal('2013-06-23 20:00:00+0100')
                     data.headers.should.eql([
                         { name: 'key', value: 'value' }
                     ])
@@ -247,18 +247,18 @@ describe('buddycloud', function() {
 
             it('Handles delete with headers', function(done) {
                 var stanza = new ltx.parse(
-                    '<message from="channels.shakespeare.lit">'
-                    + '<event xmlns="' + buddycloud.NS_EVENT + '">'
-                    + '<items node="/user/twelfth@night.org/posts">'
-                        + '<retract id="item-5" />'
-                    + '</items></event>'
-                    + '<headers xmlns="' + buddycloud.NS_HEADERS + '">'
-                        + '<header name="key">value</header>'
-                    + '</headers>'
-                    + '</message>'
+                    '<message from="channels.shakespeare.lit">' +
+                    '<event xmlns="' + buddycloud.NS_EVENT + '">' +
+                    '<items node="/user/twelfth@night.org/posts">' +
+                        '<retract id="item-5" />' +
+                    '</items></event>' +
+                    '<headers xmlns="' + buddycloud.NS_HEADERS + '">' +
+                        '<header name="key">value</header>' +
+                    '</headers>' +
+                    '</message>'
                 )
                 socket.once('xmpp.buddycloud.push.retract', function(data) {
-                   should.not.exist(data.from)
+                    should.not.exist(data.from)
                     data.node.should.equal('/user/twelfth@night.org/posts')
                     data.headers.should.eql([
                         { name: 'key', value: 'value' }

@@ -2,7 +2,6 @@
 
 var should  = require('should')
   , Buddycloud = require('../../index')
-  , ltx     = require('ltx')
   , helper  = require('../helper')
 
 /* jshint -W030 */
@@ -51,7 +50,7 @@ describe('buddycloud', function() {
                 socket.once('xmpp.error.client', function(error) {
                     error.type.should.equal('modify')
                     error.condition.should.equal('client-error')
-                    error.description.should.equal("Missing callback")
+                    error.description.should.equal('Missing callback')
                     error.request.should.eql({})
                     xmpp.removeAllListeners('stanza')
                     done()
@@ -66,7 +65,7 @@ describe('buddycloud', function() {
                 socket.once('xmpp.error.client', function(error) {
                     error.type.should.equal('modify')
                     error.condition.should.equal('client-error')
-                    error.description.should.equal("Missing callback")
+                    error.description.should.equal('Missing callback')
                     error.request.should.eql({})
                     xmpp.removeAllListeners('stanza')
                     done()
@@ -98,7 +97,7 @@ describe('buddycloud', function() {
                     should.not.exist(success)
                     error.type.should.equal('modify')
                     error.condition.should.equal('client-error')
-                    error.description.should.equal("Missing 'node' key")
+                    error.description.should.equal('Missing \'node\' key')
                     error.request.should.eql(request)
                     xmpp.removeAllListeners('stanza')
                     done()
@@ -125,13 +124,12 @@ describe('buddycloud', function() {
 
             it('Can handle error response from server', function(done) {
                 xmpp.once('stanza', function(stanza) {
-                     stanza.is('iq').should.be.true
-                     stanza.attrs.type.should.equal('get')
-                     stanza.attrs.to.should.equal(buddycloud.channelServer)
-                     should.exist(stanza.attrs.id)
-                     var query = stanza.getChild('query', buddycloud.disco.NS_INFO)
-                     manager.makeCallback(helper.getStanza('iq-error'))
-                })
+                        stanza.is('iq').should.be.true
+                        stanza.attrs.type.should.equal('get')
+                        stanza.attrs.to.should.equal(buddycloud.channelServer)
+                        should.exist(stanza.attrs.id)
+                        manager.makeCallback(helper.getStanza('iq-error'))
+                    })
 
                 var callback = function(error, success) {
                     should.not.exist(success)
@@ -149,14 +147,14 @@ describe('buddycloud', function() {
                     of: 'wonderland.lit',
                     node: 'rabbithole'
                 }
-                xmpp.once('stanza', function(stanza) {
-                     manager.makeCallback(helper.getStanza('disco-info'))
-                })
+                xmpp.once('stanza', function() {
+                        manager.makeCallback(helper.getStanza('disco-info'))
+                    })
                 var callback = function(error, data) {
                     should.not.exist(data)
                     error.type.should.equal('modify')
                     error.condition.should.equal('client-error')
-                    error.description.should.equal("No node information found")
+                    error.description.should.equal('No node information found')
                     error.request.should.eql(request)
                     xmpp.removeAllListeners('stanza')
                     done()
@@ -169,9 +167,9 @@ describe('buddycloud', function() {
                     of: 'wonderland.lit',
                     node: 'rabbithole'
                 }
-                xmpp.once('stanza', function(stanza) {
-                     manager.makeCallback(helper.getStanza('disco-info-with-data-form'))
-                })
+                xmpp.once('stanza', function() {
+                        manager.makeCallback(helper.getStanza('disco-info-with-data-form'))
+                    })
                 var callback = function(error, data) {
                     should.not.exist(error)
                     data.length.should.equal(1)
@@ -200,7 +198,7 @@ describe('buddycloud', function() {
             })
 
             it('Handles error response stanza', function(done) {
-                xmpp.once('stanza', function(stanza) {
+                xmpp.once('stanza', function() {
                     manager.makeCallback(helper.getStanza('iq-error'))
                 })
                 var callback = function(error, success) {
@@ -219,7 +217,7 @@ describe('buddycloud', function() {
             })
 
             it('Returns configuration data', function(done) {
-                xmpp.once('stanza', function(stanza) {
+                xmpp.once('stanza', function() {
                     manager.makeCallback(helper.getStanza('configuration'))
                 })
                 var callback = function(error, data) {
@@ -254,7 +252,7 @@ describe('buddycloud', function() {
             socket.once('xmpp.error.client', function(error) {
                 error.type.should.equal('modify')
                 error.condition.should.equal('client-error')
-                error.description.should.equal("Missing callback")
+                error.description.should.equal('Missing callback')
                 error.request.should.eql({})
                 xmpp.removeAllListeners('stanza')
                 done()
@@ -269,7 +267,7 @@ describe('buddycloud', function() {
             socket.once('xmpp.error.client', function(error) {
                 error.type.should.equal('modify')
                 error.condition.should.equal('client-error')
-                error.description.should.equal("Missing callback")
+                error.description.should.equal('Missing callback')
                 error.request.should.eql({})
                 xmpp.removeAllListeners('stanza')
                 done()
@@ -301,7 +299,7 @@ describe('buddycloud', function() {
                 should.not.exist(success)
                 error.type.should.equal('modify')
                 error.condition.should.equal('client-error')
-                error.description.should.equal("Missing 'node' key")
+                error.description.should.equal('Missing \'node\' key')
                 error.request.should.eql(request)
                 xmpp.removeAllListeners('stanza')
                 done()
@@ -325,7 +323,7 @@ describe('buddycloud', function() {
                 should.not.exist(success)
                 error.type.should.equal('modify')
                 error.condition.should.equal('client-error')
-                error.description.should.equal("Badly formatted data form")
+                error.description.should.equal('Badly formatted data form')
                 error.request.should.eql(request)
                 xmpp.removeAllListeners('stanza')
                 done()
@@ -354,8 +352,7 @@ describe('buddycloud', function() {
 
         it('Sends expected stanza with data form (configuration)', function(done) {
             xmpp.once('stanza', function(stanza) {
-                var create = stanza.getChild('pubsub').getChild('create')
-                var dataForm =stanza.getChild('pubsub')
+                var dataForm = stanza.getChild('pubsub')
                     .getChild('configure')
                     .getChild('x', 'jabber:x:data')
                 dataForm.should.exist
@@ -375,7 +372,7 @@ describe('buddycloud', function() {
                 node: '/user/romeo@example.com/posts',
                 options: [{
                     var: 'pubsub#description',
-                    value: "Romeo's channel"
+                    value: 'Romeo\'s channel'
                 }]
             }
             socket.emit(
@@ -386,9 +383,9 @@ describe('buddycloud', function() {
         })
 
         it('Can handle error response from server', function(done) {
-            xmpp.once('stanza', function(stanza) {
-                 manager.makeCallback(helper.getStanza('iq-error'))
-            })
+            xmpp.once('stanza', function() {
+                    manager.makeCallback(helper.getStanza('iq-error'))
+                })
 
             var callback = function(error, success) {
                 should.not.exist(success)
