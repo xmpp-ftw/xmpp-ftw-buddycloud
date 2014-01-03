@@ -10,8 +10,8 @@ describe('buddycloud', function() {
     var buddycloud, socket, xmpp, manager
 
     before(function() {
-        socket = new helper.Eventer()
-        xmpp = new helper.Eventer()
+        socket = new helper.SocketEventer()
+        xmpp = new helper.XmppEventer()
         manager = {
             socket: socket,
             client: xmpp,
@@ -35,8 +35,10 @@ describe('buddycloud', function() {
         buddycloud.init(manager)
     })
 
-    afterEach(function() {
-        xmpp.removeAllListeners('stanza')
+    beforeEach(function() {
+        socket.removeAllListeners()
+        xmpp.removeAllListeners()
+        buddycloud.init(manager)
         buddycloud.channelServer = 'channels.example.com'
     })
 
@@ -53,7 +55,7 @@ describe('buddycloud', function() {
                 done()
             })
             delete buddycloud.channelServer
-            socket.emit('xmpp.buddycloud.presence')
+            socket.send('xmpp.buddycloud.presence')
         })
 
         it('Sends expected stanza', function(done) {
@@ -65,7 +67,7 @@ describe('buddycloud', function() {
                 stanza.getChildText('show').should.equal('online')
                 done()
             })
-            socket.emit('xmpp.buddycloud.presence')
+            socket.send('xmpp.buddycloud.presence')
         })
 
     })

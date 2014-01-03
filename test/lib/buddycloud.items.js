@@ -12,8 +12,8 @@ describe('buddycloud', function() {
     var buddycloud, socket, xmpp, manager
 
     before(function() {
-        socket = new helper.Eventer()
-        xmpp = new helper.Eventer()
+        socket = new helper.SocketEventer()
+        xmpp = new helper.XmppEventer()
         manager = {
             socket: socket,
             client: xmpp,
@@ -37,6 +37,9 @@ describe('buddycloud', function() {
     })
 
     beforeEach(function() {
+        socket.removeAllListeners()
+        xmpp.removeAllListeners()
+        buddycloud.init(manager)
         buddycloud.channelServer = 'channels.example.com'
     })
 
@@ -54,7 +57,7 @@ describe('buddycloud', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             })
-            socket.emit('xmpp.buddycloud.publish', {})
+            socket.send('xmpp.buddycloud.publish', {})
         })
 
         it('Errors when non-function callback provided', function(done) {
@@ -69,12 +72,12 @@ describe('buddycloud', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             })
-            socket.emit('xmpp.buddycloud.publish', {}, true)
+            socket.send('xmpp.buddycloud.publish', {}, true)
         })
 
         it('Complains if discovery hasn\'t taken place', function(done) {
             delete buddycloud.channelServer
-            socket.emit('xmpp.buddycloud.publish', {}, function(error, data) {
+            socket.send('xmpp.buddycloud.publish', {}, function(error, data) {
                 should.not.exist(data)
                 error.should.eql({
                     type: 'modify',
@@ -110,7 +113,7 @@ describe('buddycloud', function() {
                     .should.equal(request.content.atom.content)
                 done()
             })
-            socket.emit('xmpp.buddycloud.publish', request, function() {})
+            socket.send('xmpp.buddycloud.publish', request, function() {})
         })
 
     })
@@ -129,7 +132,7 @@ describe('buddycloud', function() {
                 })
                 done()
             }
-            socket.emit('xmpp.buddycloud.items.recent', {}, callback)
+            socket.send('xmpp.buddycloud.items.recent', {}, callback)
         })
 
         it('Sends expected stanza', function(done) {
@@ -147,7 +150,7 @@ describe('buddycloud', function() {
                 recentItems.attrs.since.should.startWith('2000-01-01T')
                 done()
             })
-            socket.emit('xmpp.buddycloud.items.recent', {}, function() {})
+            socket.send('xmpp.buddycloud.items.recent', {}, function() {})
         })
 
         it('Errors when date is unparsable', function(done) {
@@ -164,7 +167,7 @@ describe('buddycloud', function() {
                 })
                 done()
             }
-            socket.emit('xmpp.buddycloud.items.recent', request, callback)
+            socket.send('xmpp.buddycloud.items.recent', request, callback)
         })
 
         it('Sends expected stanza with parameters set', function(done) {
@@ -180,7 +183,7 @@ describe('buddycloud', function() {
                 recentItems.attrs.max.should.equal(request.max)
                 done()
             })
-            socket.emit('xmpp.buddycloud.items.recent', request, function() {})
+            socket.send('xmpp.buddycloud.items.recent', request, function() {})
         })
 
         it('Sends expected stanza with RSM', function(done) {
@@ -198,7 +201,7 @@ describe('buddycloud', function() {
                 set.getChildText('after').should.equal(request.rsm.after)
                 done()
             })
-            socket.emit('xmpp.buddycloud.items.recent', request, function () {})
+            socket.send('xmpp.buddycloud.items.recent', request, function () {})
         })
 
         it('Handles error response', function(done) {
@@ -213,7 +216,7 @@ describe('buddycloud', function() {
                 })
                 done()
             }
-            socket.emit('xmpp.buddycloud.items.recent', {}, callback)
+            socket.send('xmpp.buddycloud.items.recent', {}, callback)
         })
 
         it('Sends back expected data', function(done) {
@@ -236,7 +239,7 @@ describe('buddycloud', function() {
                 data[2].entry.should.eql({ body: 'item-3-content' })
                 done()
             }
-            socket.emit('xmpp.buddycloud.items.recent', {}, callback)
+            socket.send('xmpp.buddycloud.items.recent', {}, callback)
         })
 
         it('Sends back RSM element', function(done) {
@@ -252,7 +255,7 @@ describe('buddycloud', function() {
                 })
                 done()
             }
-            socket.emit('xmpp.buddycloud.items.recent', {}, callback)
+            socket.send('xmpp.buddycloud.items.recent', {}, callback)
         })
 
         it('Errors when no callback provided', function(done) {
@@ -267,7 +270,7 @@ describe('buddycloud', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             })
-            socket.emit('xmpp.buddycloud.items.recent', {})
+            socket.send('xmpp.buddycloud.items.recent', {})
         })
 
         it('Errors when non-function callback provided', function(done) {
@@ -282,7 +285,7 @@ describe('buddycloud', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             })
-            socket.emit('xmpp.buddycloud.items.recent', {}, true)
+            socket.send('xmpp.buddycloud.items.recent', {}, true)
         })
 
     })
@@ -301,7 +304,7 @@ describe('buddycloud', function() {
                 })
                 done()
             }
-            socket.emit('xmpp.buddycloud.items.replies', {}, callback)
+            socket.send('xmpp.buddycloud.items.replies', {}, callback)
         })
 
         it('Errors when no callback provided', function(done) {
@@ -316,7 +319,7 @@ describe('buddycloud', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             })
-            socket.emit('xmpp.buddycloud.items.replies', {})
+            socket.send('xmpp.buddycloud.items.replies', {})
         })
 
         it('Errors when non-function callback provided', function(done) {
@@ -331,7 +334,7 @@ describe('buddycloud', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             })
-            socket.emit('xmpp.buddycloud.items.replies', {}, true)
+            socket.send('xmpp.buddycloud.items.replies', {}, true)
         })
 
         it('Errors if no \'node\' provided', function(done) {
@@ -348,7 +351,7 @@ describe('buddycloud', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             }
-            socket.emit(
+            socket.send(
                 'xmpp.buddycloud.items.replies',
                 request,
                 callback
@@ -369,7 +372,7 @@ describe('buddycloud', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             }
-            socket.emit(
+            socket.send(
                 'xmpp.buddycloud.items.replies',
                 request,
                 callback
@@ -396,7 +399,7 @@ describe('buddycloud', function() {
                 replies.attrs['item_id'].should.equal(request.id)
                 done()
             })
-            socket.emit('xmpp.buddycloud.items.replies', request, function() {})
+            socket.send('xmpp.buddycloud.items.replies', request, function() {})
         })
 
         it('Sends expected stanza with RSM applied', function(done) {
@@ -415,7 +418,7 @@ describe('buddycloud', function() {
                 set.getChild('before').should.exist
                 done()
             })
-            socket.emit('xmpp.buddycloud.items.replies', request, function() {})
+            socket.send('xmpp.buddycloud.items.replies', request, function() {})
         })
 
         it('Handles an error reply', function(done) {
@@ -434,7 +437,7 @@ describe('buddycloud', function() {
                 node: '/user/romeo@example.com/post',
                 id: '1234'
             }
-            socket.emit(
+            socket.send(
                 'xmpp.buddycloud.items.replies',
                 request,
                 callback
@@ -460,7 +463,7 @@ describe('buddycloud', function() {
                 node: '/user/romeo@example.com/post',
                 id: '1234'
             }
-            socket.emit(
+            socket.send(
                 'xmpp.buddycloud.items.replies',
                 request,
                 callback
@@ -484,7 +487,7 @@ describe('buddycloud', function() {
                 node: '/user/romeo@example.com/post',
                 id: '1234'
             }
-            socket.emit(
+            socket.send(
                 'xmpp.buddycloud.items.replies',
                 request,
                 callback
@@ -509,7 +512,7 @@ describe('buddycloud', function() {
                 })
                 done()
             }
-            socket.emit('xmpp.buddycloud.retrieve', {}, callback)
+            socket.send('xmpp.buddycloud.retrieve', {}, callback)
         })
 
         it('Errors when no callback provided', function(done) {
@@ -524,7 +527,7 @@ describe('buddycloud', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             })
-            socket.emit('xmpp.buddycloud.retrieve', {})
+            socket.send('xmpp.buddycloud.retrieve', {})
         })
 
         it('Errors when non-function callback provided', function(done) {
@@ -539,7 +542,7 @@ describe('buddycloud', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             })
-            socket.emit('xmpp.buddycloud.retrieve', {}, true)
+            socket.send('xmpp.buddycloud.retrieve', {}, true)
         })
 
         it('Returns RSM element', function(done) {
@@ -559,7 +562,7 @@ describe('buddycloud', function() {
                 node: '/user/romeo@example.com/post',
                 id: '1234'
             }
-            socket.emit(
+            socket.send(
                 'xmpp.buddycloud.retrieve',
                 request,
                 callback
@@ -578,7 +581,7 @@ describe('buddycloud', function() {
                 done()
             }
             var request = { node: '/user/romeo@example.com/post' }
-            socket.emit(
+            socket.send(
                 'xmpp.buddycloud.retrieve',
                 request,
                 callback
@@ -601,7 +604,7 @@ describe('buddycloud', function() {
                 })
                 done()
             }
-            socket.emit('xmpp.buddycloud.items.thread', {}, callback)
+            socket.send('xmpp.buddycloud.items.thread', {}, callback)
         })
 
         it('Errors if no \'node\' provided', function(done) {
@@ -618,7 +621,7 @@ describe('buddycloud', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             }
-            socket.emit(
+            socket.send(
                 'xmpp.buddycloud.items.thread',
                 request,
                 callback
@@ -639,7 +642,7 @@ describe('buddycloud', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             }
-            socket.emit(
+            socket.send(
                 'xmpp.buddycloud.items.thread',
                 request,
                 callback
@@ -666,7 +669,7 @@ describe('buddycloud', function() {
                 replies.attrs['item_id'].should.equal(request.id)
                 done()
             })
-            socket.emit('xmpp.buddycloud.items.thread', request, function() {})
+            socket.send('xmpp.buddycloud.items.thread', request, function() {})
         })
 
         it('Sends expected stanza with RSM applied', function(done) {
@@ -685,7 +688,7 @@ describe('buddycloud', function() {
                 set.getChild('before').should.exist
                 done()
             })
-            socket.emit('xmpp.buddycloud.items.thread', request, function() {})
+            socket.send('xmpp.buddycloud.items.thread', request, function() {})
         })
 
         it('Handles an error reply', function(done) {
@@ -704,7 +707,7 @@ describe('buddycloud', function() {
                 node: '/user/romeo@example.com/post',
                 id: '1234'
             }
-            socket.emit(
+            socket.send(
                 'xmpp.buddycloud.items.thread',
                 request,
                 callback
@@ -730,7 +733,7 @@ describe('buddycloud', function() {
                 node: '/user/romeo@example.com/post',
                 id: '1234'
             }
-            socket.emit(
+            socket.send(
                 'xmpp.buddycloud.items.thread',
                 request,
                 callback
@@ -754,7 +757,7 @@ describe('buddycloud', function() {
                 node: '/user/romeo@example.com/post',
                 id: '1234'
             }
-            socket.emit(
+            socket.send(
                 'xmpp.buddycloud.items.thread',
                 request,
                 callback
@@ -773,7 +776,7 @@ describe('buddycloud', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             })
-            socket.emit('xmpp.buddycloud.items.thread', {})
+            socket.send('xmpp.buddycloud.items.thread', {})
         })
 
         it('Errors when non-function callback provided', function(done) {
@@ -788,7 +791,7 @@ describe('buddycloud', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             })
-            socket.emit('xmpp.buddycloud.items.thread', {}, true)
+            socket.send('xmpp.buddycloud.items.thread', {}, true)
         })
 
     })

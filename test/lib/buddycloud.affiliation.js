@@ -10,8 +10,8 @@ describe('buddycloud', function() {
     var buddycloud, socket, xmpp, manager
 
     before(function() {
-        socket = new helper.Eventer()
-        xmpp = new helper.Eventer()
+        socket = new helper.SocketEventer()
+        xmpp = new helper.XmppEventer()
         manager = {
             socket: socket,
             client: xmpp,
@@ -35,6 +35,9 @@ describe('buddycloud', function() {
     })
 
     beforeEach(function() {
+        socket.removeAllListeners()
+        xmpp.removeAllListeners()
+        buddycloud.init(manager)
         buddycloud.channelServer = 'channels.example.com'
     })
 
@@ -52,7 +55,7 @@ describe('buddycloud', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             })
-            socket.emit('xmpp.buddycloud.affiliations', {})
+            socket.send('xmpp.buddycloud.affiliations', {})
         })
 
         it('Errors when non-function callback provided', function(done) {
@@ -67,12 +70,12 @@ describe('buddycloud', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             })
-            socket.emit('xmpp.buddycloud.affiliations', {}, true)
+            socket.send('xmpp.buddycloud.affiliations', {}, true)
         })
 
         it('Complains if discovery hasn\'t taken place', function(done) {
             delete buddycloud.channelServer
-            socket.emit('xmpp.buddycloud.affiliations', {}, function(error, data) {
+            socket.send('xmpp.buddycloud.affiliations', {}, function(error, data) {
                 should.not.exist(data)
                 error.should.eql({
                     type: 'modify',
@@ -93,7 +96,7 @@ describe('buddycloud', function() {
                 pubsub.getChild('affiliations').should.exist
                 done()
             })
-            socket.emit('xmpp.buddycloud.affiliations', request, function() {})
+            socket.send('xmpp.buddycloud.affiliations', request, function() {})
         })
 
         it('Handles an error reply', function(done) {
@@ -111,7 +114,7 @@ describe('buddycloud', function() {
             var request = {
                 node: '/user/romeo@example.com/post',
             }
-            socket.emit(
+            socket.send(
                 'xmpp.buddycloud.affiliations',
                 request,
                 callback
@@ -140,7 +143,7 @@ describe('buddycloud', function() {
                 done()
             }
             var request = {}
-            socket.emit(
+            socket.send(
                 'xmpp.buddycloud.affiliations',
                 request,
                 callback
@@ -161,7 +164,7 @@ describe('buddycloud', function() {
                 done()
             }
             var request = {}
-            socket.emit(
+            socket.send(
                 'xmpp.buddycloud.affiliations',
                 request,
                 callback
@@ -187,7 +190,7 @@ describe('buddycloud', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             })
-            socket.emit('xmpp.buddycloud.affiliation', {})
+            socket.send('xmpp.buddycloud.affiliation', {})
         })
 
         it('Errors when non-function callback provided', function(done) {
@@ -202,12 +205,12 @@ describe('buddycloud', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             })
-            socket.emit('xmpp.buddycloud.affiliation', {}, true)
+            socket.send('xmpp.buddycloud.affiliation', {}, true)
         })
 
         it('Complains if discovery hasn\'t taken place', function(done) {
             delete buddycloud.channelServer
-            socket.emit('xmpp.buddycloud.affiliation', {}, function(error, data) {
+            socket.send('xmpp.buddycloud.affiliation', {}, function(error, data) {
                 should.not.exist(data)
                 error.should.eql({
                     type: 'modify',
@@ -241,7 +244,7 @@ describe('buddycloud', function() {
                 affiliation.attrs.jid.should.equal(request.jid)
                 done()
             })
-            socket.emit('xmpp.buddycloud.affiliation', request, function() {})
+            socket.send('xmpp.buddycloud.affiliation', request, function() {})
         })
 
     })

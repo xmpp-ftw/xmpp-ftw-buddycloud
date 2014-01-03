@@ -10,8 +10,8 @@ describe('Buddycloud', function() {
     var buddycloud, socket, xmpp, manager
 
     before(function() {
-        socket = new helper.Eventer()
-        xmpp = new helper.Eventer()
+        socket = new helper.SocketEventer()
+        xmpp = new helper.XmppEventer()
         manager = {
             socket: socket,
             client: xmpp,
@@ -36,7 +36,10 @@ describe('Buddycloud', function() {
     })
 
     beforeEach(function() {
-        buddycloud.channelServer = 'channels.shakespeare.lit'
+        socket.removeAllListeners()
+        xmpp.removeAllListeners()
+        buddycloud.init(manager)
+        buddycloud.channelServer = 'channels.example.com'
     })
 
     describe('Subscription', function() {
@@ -53,7 +56,7 @@ describe('Buddycloud', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             })
-            socket.emit('xmpp.buddycloud.subscription', {})
+            socket.send('xmpp.buddycloud.subscription', {})
         })
 
         it('Errors when non-function callback provided', function(done) {
@@ -68,12 +71,12 @@ describe('Buddycloud', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             })
-            socket.emit('xmpp.buddycloud.subscription', {}, true)
+            socket.send('xmpp.buddycloud.subscription', {}, true)
         })
 
         it('Complains if discovery hasn\'t taken place', function(done) {
             delete buddycloud.channelServer
-            socket.emit('xmpp.buddycloud.subscription', {}, function(error, data) {
+            socket.send('xmpp.buddycloud.subscription', {}, function(error, data) {
                 should.not.exist(data)
                 error.should.eql({
                     type: 'modify',
@@ -109,7 +112,7 @@ describe('Buddycloud', function() {
 
                 done()
             })
-            socket.emit('xmpp.buddycloud.subscription', request, function() {})
+            socket.send('xmpp.buddycloud.subscription', request, function() {})
         })
 
         it('Handles an error stanza response', function(done) {
@@ -129,7 +132,7 @@ describe('Buddycloud', function() {
                 jid: 'juliet@shakespeare.lit',
                 subscription: 'subscribed'
             }
-            socket.emit(
+            socket.send(
                 'xmpp.buddycloud.subscription',
                 request,
                 callback
@@ -150,7 +153,7 @@ describe('Buddycloud', function() {
                 jid: 'juliet@shakespeare.lit',
                 subscription: 'subscribed'
             }
-            socket.emit(
+            socket.send(
                 'xmpp.buddycloud.subscription',
                 request,
                 callback

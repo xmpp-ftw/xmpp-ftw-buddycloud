@@ -10,8 +10,8 @@ describe('buddycloud', function() {
     var buddycloud, socket, xmpp, manager
 
     before(function() {
-        socket = new helper.Eventer()
-        xmpp = new helper.Eventer()
+        socket = new helper.SocketEventer()
+        xmpp = new helper.XmppEventer()
         manager = {
             socket: socket,
             client: xmpp,
@@ -33,6 +33,13 @@ describe('buddycloud', function() {
         buddycloud = new Buddycloud()
         buddycloud.init(manager)
         buddycloud.channelServer = 'chanels.example.com'
+    })
+
+    beforeEach(function() {
+        socket.removeAllListeners()
+        xmpp.removeAllListeners()
+        buddycloud.init(manager)
+        buddycloud.channelServer = 'channels.example.com'
     })
 
     it('Parses entry XML to expected format', function(done) {
@@ -75,7 +82,7 @@ describe('buddycloud', function() {
 
                 done()
             }
-            socket.emit('xmpp.buddycloud.search.do', payload, callback)
+            socket.send('xmpp.buddycloud.search.do', payload, callback)
         })
 
 })

@@ -10,8 +10,8 @@ describe('buddycloud', function() {
     var buddycloud, socket, xmpp, manager
 
     before(function() {
-        socket = new helper.Eventer()
-        xmpp = new helper.Eventer()
+        socket = new helper.SocketEventer()
+        xmpp = new helper.XmppEventer()
         manager = {
             socket: socket,
             client: xmpp,
@@ -35,8 +35,11 @@ describe('buddycloud', function() {
         buddycloud.init(manager)
     })
 
-    afterEach(function() {
-        xmpp.removeAllListeners('stanza')
+    beforeEach(function() {
+        socket.removeAllListeners()
+        xmpp.removeAllListeners()
+        buddycloud.init(manager)
+        buddycloud.channelServer = 'channels.example.com'
     })
 
     describe('Channel server discover', function() {
@@ -53,7 +56,7 @@ describe('buddycloud', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             })
-            socket.emit('xmpp.buddycloud.discover', {})
+            socket.send('xmpp.buddycloud.discover', {})
         })
 
         it('Errors when non-function callback provided', function(done) {
@@ -68,7 +71,7 @@ describe('buddycloud', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             })
-            socket.emit('xmpp.buddycloud.discover', {}, true)
+            socket.send('xmpp.buddycloud.discover', {}, true)
         })
 
         it('Sends out expected disco#items stanzas', function(done) {
@@ -81,7 +84,7 @@ describe('buddycloud', function() {
                     .should.exist
                 done()
             })
-            socket.emit('xmpp.buddycloud.discover', null, function() {})
+            socket.send('xmpp.buddycloud.discover', null, function() {})
         })
 
         it('Tracks and can handle an error response', function(done) {
@@ -90,7 +93,7 @@ describe('buddycloud', function() {
                 errorResponse.attrs.id = stanza.attrs.id
                 manager.makeCallback(errorResponse)
             })
-            socket.emit('xmpp.buddycloud.discover', {}, function(error, items) {
+            socket.send('xmpp.buddycloud.discover', {}, function(error, items) {
                 should.not.exist(items)
                 error.type.should.equal('cancel')
                 error.condition.should.equal('error-condition')
@@ -113,7 +116,7 @@ describe('buddycloud', function() {
                 })
                 manager.makeCallback(helper.getStanza('disco-items'))
             })
-            socket.emit('xmpp.buddycloud.discover', null, function() {})
+            socket.send('xmpp.buddycloud.discover', null, function() {})
         })
 
         it('Handles error responses; returns failure', function(done) {
@@ -125,7 +128,7 @@ describe('buddycloud', function() {
                 })
                 manager.makeCallback(helper.getStanza('disco-items'))
             })
-            socket.emit('xmpp.buddycloud.discover', {}, function(error, item) {
+            socket.send('xmpp.buddycloud.discover', {}, function(error, item) {
                 should.not.exist(item)
                 error.should.equal('No buddycloud server found')
                 done()
@@ -141,7 +144,7 @@ describe('buddycloud', function() {
                 })
                 manager.makeCallback(helper.getStanza('disco-items'))
             })
-            socket.emit('xmpp.buddycloud.discover', {}, function(error, item) {
+            socket.send('xmpp.buddycloud.discover', {}, function(error, item) {
                 should.not.exist(item)
                 error.should.equal('No buddycloud server found')
                 done()
@@ -164,7 +167,7 @@ describe('buddycloud', function() {
                 })
                 manager.makeCallback(helper.getStanza('disco-items'))
             })
-            socket.emit('xmpp.buddycloud.discover', {}, function(error, item) {
+            socket.send('xmpp.buddycloud.discover', {}, function(error, item) {
                 should.not.exist(error)
                 item.should.equal('channels.example.com')
                 buddycloud.channelServer.should.equal('channels.example.com')
@@ -180,7 +183,7 @@ describe('buddycloud', function() {
                 })
                 manager.makeCallback(helper.getStanza('disco-items'))
             })
-            socket.emit('xmpp.buddycloud.discover', {}, function(error, item) {
+            socket.send('xmpp.buddycloud.discover', {}, function(error, item) {
                 should.not.exist(item)
                 error.should.equal('No buddycloud server found')
                 done()
@@ -200,7 +203,7 @@ describe('buddycloud', function() {
                     manager.makeCallback(helper.getStanza('disco-info'))
                 }, 2)
             })
-            socket.emit('xmpp.buddycloud.discover', {}, function(error, item) {
+            socket.send('xmpp.buddycloud.discover', {}, function(error, item) {
                 should.not.exist(item)
                 error.should.equal('No buddycloud server found')
             })
@@ -217,7 +220,7 @@ describe('buddycloud', function() {
             var callback = function() {
                 done()
             }
-            socket.emit('xmpp.buddycloud.discover.info', {}, callback)
+            socket.send('xmpp.buddycloud.discover.info', {}, callback)
         })
 
         it('Responds to disco#items events', function(done) {
@@ -227,14 +230,14 @@ describe('buddycloud', function() {
             var callback = function() {
                 done()
             }
-            socket.emit('xmpp.buddycloud.discover.items', {}, callback)
+            socket.send('xmpp.buddycloud.discover.items', {}, callback)
         })
 
     })
 
     it('Allows manual setting of channel server', function(done) {
 
-        socket.emit(
+        socket.send(
             'xmpp.buddycloud.discover',
             { server: 'channels.example.com' },
             function(error, item) {

@@ -10,8 +10,8 @@ describe('buddycloud', function() {
     var buddycloud, socket, xmpp, manager
 
     before(function() {
-        socket = new helper.Eventer()
-        xmpp = new helper.Eventer()
+        socket = new helper.SocketEventer()
+        xmpp = new helper.XmppEventer()
         manager = {
             socket: socket,
             client: xmpp,
@@ -35,6 +35,9 @@ describe('buddycloud', function() {
     })
 
     beforeEach(function() {
+        socket.removeAllListeners()
+        xmpp.removeAllListeners()
+        buddycloud.init(manager)
         buddycloud.channelServer = 'channels.shakespeare.lit'
     })
 
@@ -52,7 +55,7 @@ describe('buddycloud', function() {
                 })
                 done()
             }
-            socket.emit('xmpp.buddycloud.register', {}, callback)
+            socket.send('xmpp.buddycloud.register', {}, callback)
         })
 
         it('Sends expected stanza', function(done) {
@@ -63,7 +66,7 @@ describe('buddycloud', function() {
                 stanza.getChild('query', 'jabber:iq:register').should.exist
                 done()
             })
-            socket.emit(
+            socket.send(
                 'xmpp.buddycloud.register',
                 {},
                 function() {}

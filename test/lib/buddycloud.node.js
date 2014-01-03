@@ -10,8 +10,8 @@ describe('buddycloud', function() {
     var buddycloud, socket, xmpp, manager
 
     before(function() {
-        socket = new helper.Eventer()
-        xmpp = new helper.Eventer()
+        socket = new helper.SocketEventer()
+        xmpp = new helper.XmppEventer()
         manager = {
             socket: socket,
             client: xmpp,
@@ -35,8 +35,10 @@ describe('buddycloud', function() {
     })
 
     beforeEach(function() {
+        socket.removeAllListeners()
+        xmpp.removeAllListeners()
+        buddycloud.init(manager)
         buddycloud.channelServer = 'channels.example.com'
-        xmpp.removeAllListeners('stanza')
     })
 
     describe('Configuration', function() {
@@ -55,7 +57,7 @@ describe('buddycloud', function() {
                     xmpp.removeAllListeners('stanza')
                     done()
                 })
-                socket.emit('xmpp.buddycloud.config.get', {})
+                socket.send('xmpp.buddycloud.config.get', {})
             })
 
             it('Errors when non-function callback provided', function(done) {
@@ -70,7 +72,7 @@ describe('buddycloud', function() {
                     xmpp.removeAllListeners('stanza')
                     done()
                 })
-                socket.emit('xmpp.buddycloud.config.get', {}, true)
+                socket.send('xmpp.buddycloud.config.get', {}, true)
             })
 
             it('Errors if buddycloud server not discovered', function(done) {
@@ -85,7 +87,7 @@ describe('buddycloud', function() {
                     })
                     done()
                 }
-                socket.emit('xmpp.buddycloud.config.get', {}, callback)
+                socket.send('xmpp.buddycloud.config.get', {}, callback)
             })
 
             it('Errors if no \'node\' provided', function(done) {
@@ -102,7 +104,7 @@ describe('buddycloud', function() {
                     xmpp.removeAllListeners('stanza')
                     done()
                 }
-                socket.emit(
+                socket.send(
                     'xmpp.buddycloud.config.get',
                     request,
                     callback
@@ -119,7 +121,7 @@ describe('buddycloud', function() {
                         .should.exist
                     done()
                 })
-                socket.emit('xmpp.buddycloud.config.get', { node: 'some-node' }, function() {})
+                socket.send('xmpp.buddycloud.config.get', { node: 'some-node' }, function() {})
             })
 
             it('Can handle error response from server', function(done) {
@@ -139,7 +141,7 @@ describe('buddycloud', function() {
                     })
                     done()
                 }
-                socket.emit('xmpp.buddycloud.config.get', { node: 'some-node' }, callback)
+                socket.send('xmpp.buddycloud.config.get', { node: 'some-node' }, callback)
             })
 
             it('Can handle no node information', function(done) {
@@ -159,7 +161,7 @@ describe('buddycloud', function() {
                     xmpp.removeAllListeners('stanza')
                     done()
                 }
-                socket.emit('xmpp.buddycloud.config.get', request, callback)
+                socket.send('xmpp.buddycloud.config.get', request, callback)
             })
 
             it('Can handle successful response', function(done) {
@@ -178,7 +180,7 @@ describe('buddycloud', function() {
                     data[0].label.should.equal('label1')
                     done()
                 }
-                socket.emit('xmpp.buddycloud.config.get', request, callback)
+                socket.send('xmpp.buddycloud.config.get', request, callback)
             })
 
             it('Sends the expected stanza for owner request', function(done) {
@@ -194,7 +196,7 @@ describe('buddycloud', function() {
                     configure.attrs.node.should.equal(request.node)
                     done()
                 })
-                socket.emit('xmpp.buddycloud.config.get', request, function() {})
+                socket.send('xmpp.buddycloud.config.get', request, function() {})
             })
 
             it('Handles error response stanza', function(done) {
@@ -213,7 +215,7 @@ describe('buddycloud', function() {
                     owner: true,
                     node: 'twelfth night'
                 }
-                socket.emit('xmpp.buddycloud.config.get', request, callback)
+                socket.send('xmpp.buddycloud.config.get', request, callback)
             })
 
             it('Returns configuration data', function(done) {
@@ -236,7 +238,7 @@ describe('buddycloud', function() {
                     owner: true,
                     node: 'twelfth night'
                 }
-                socket.emit('xmpp.buddycloud.config.get', request, callback)
+                socket.send('xmpp.buddycloud.config.get', request, callback)
             })
 
         })
@@ -257,7 +259,7 @@ describe('buddycloud', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             })
-            socket.emit('xmpp.buddycloud.create', {})
+            socket.send('xmpp.buddycloud.create', {})
         })
 
         it('Errors when non-function callback provided', function(done) {
@@ -272,7 +274,7 @@ describe('buddycloud', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             })
-            socket.emit('xmpp.buddycloud.create', {}, true)
+            socket.send('xmpp.buddycloud.create', {}, true)
         })
 
         it('Errors if buddycloud server not discovered', function(done) {
@@ -287,7 +289,7 @@ describe('buddycloud', function() {
                 })
                 done()
             }
-            socket.emit('xmpp.buddycloud.create', {}, callback)
+            socket.send('xmpp.buddycloud.create', {}, callback)
         })
 
         it('Errors if no \'node\' provided', function(done) {
@@ -304,7 +306,7 @@ describe('buddycloud', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             }
-            socket.emit(
+            socket.send(
                 'xmpp.buddycloud.create',
                 request,
                 callback
@@ -328,7 +330,7 @@ describe('buddycloud', function() {
                 xmpp.removeAllListeners('stanza')
                 done()
             }
-            socket.emit(
+            socket.send(
                 'xmpp.buddycloud.create',
                 request,
                 callback
@@ -347,7 +349,7 @@ describe('buddycloud', function() {
                 create.attrs.node.should.equal(request.node)
                 done()
             })
-            socket.emit('xmpp.buddycloud.create', request, function() {})
+            socket.send('xmpp.buddycloud.create', request, function() {})
         })
 
         it('Sends expected stanza with data form (configuration)', function(done) {
@@ -375,7 +377,7 @@ describe('buddycloud', function() {
                     value: 'Romeo\'s channel'
                 }]
             }
-            socket.emit(
+            socket.send(
                 'xmpp.buddycloud.create',
                 request,
                 function() {}
@@ -395,7 +397,7 @@ describe('buddycloud', function() {
                 })
                 done()
             }
-            socket.emit('xmpp.buddycloud.create', { node: 'some-node' }, callback)
+            socket.send('xmpp.buddycloud.create', { node: 'some-node' }, callback)
         })
 
     })

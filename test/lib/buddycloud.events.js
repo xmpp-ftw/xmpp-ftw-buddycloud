@@ -11,8 +11,8 @@ describe('buddycloud', function() {
     var buddycloud, socket, xmpp, manager
 
     before(function() {
-        socket = new helper.Eventer()
-        xmpp = new helper.Eventer()
+        socket = new helper.SocketEventer()
+        xmpp = new helper.XmppEventer()
         manager = {
             socket: socket,
             client: xmpp,
@@ -35,11 +35,14 @@ describe('buddycloud', function() {
         buddycloud.init(manager)
     })
 
-    describe('Handles certain packets', function() {
+    beforeEach(function() {
+        socket.removeAllListeners()
+        xmpp.removeAllListeners()
+        buddycloud.init(manager)
+        buddycloud.channelServer = 'channels.shakespeare.lit'
+    })
 
-        beforeEach(function() {
-            buddycloud.channelServer = 'channels.shakespeare.lit'
-        })
+    describe('Handles certain packets', function() {
 
         it('Doesn\'t handle packets if server not discovered', function() {
             delete buddycloud.channelServer

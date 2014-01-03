@@ -30,23 +30,24 @@
     "url": "https://github.com/xmpp-ftw/xmpp-ftw-buddycloud/issues"
   },
   "dependencies": {
-    "ltx": "*",
-    "xmpp-ftw-item-parser": "*",
-    "xmpp-ftw-pubsub": "*",
-    "xmpp-ftw-disco": "*",
+    "ltx": "~0.3.3",
+    "xmpp-ftw-item-parser": "~0.4.6",
+    "xmpp-ftw-pubsub": "~1.0.0",
+    "xmpp-ftw-disco": "~1.0.0",
     "async": "~0.2.9",
-    "xmpp-ftw-register": "*",
-    "xmpp-ftw-search": "*"
+    "xmpp-ftw-register": "~1.0.0",
+    "xmpp-ftw-search": "~1.0.0",
+    "xmpp-ftw": "~1.0.1"
   },
   "devDependencies": {
     "mocha": "~1.8.1",
     "should": "~2.0.2",
-    "xmpp-ftw": "*",
+    "xmpp-ftw": "~1.0.1",
     "grunt-mocha-cli": "~1.4.0",
     "grunt": "~0.4.2",
     "grunt-contrib-jshint": "~0.7.2"
   },
   "peerDependencies": {
-    "xmpp-ftw": "0.x"
+    "xmpp-ftw": "1.x"
   }
 }
