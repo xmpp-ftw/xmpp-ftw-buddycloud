@@ -31,17 +31,17 @@
   },
   "dependencies": {
     "ltx": "*",
-    "xmpp-ftw-item-parser": "*",
-    "xmpp-ftw-pubsub": "*",
-    "xmpp-ftw-disco": "*",
+    "xmpp-ftw-item-parser": "0.X",
+    "xmpp-ftw-pubsub": "0.X",
+    "xmpp-ftw-disco": "0.X",
     "async": "~0.2.9",
-    "xmpp-ftw-register": "*",
-    "xmpp-ftw-search": "*"
+    "xmpp-ftw-register": "0.X",
+    "xmpp-ftw-search": "0.X"
   },
   "devDependencies": {
     "mocha": "~1.8.1",
     "should": "~2.0.2",
-    "xmpp-ftw": "*",
+    "xmpp-ftw": "0.X",
     "grunt-mocha-cli": "~1.4.0",
     "grunt": "~0.4.2",
     "grunt-contrib-jshint": "~0.7.2"
