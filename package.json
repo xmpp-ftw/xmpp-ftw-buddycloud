@@ -30,7 +30,7 @@
     "url": "https://github.com/xmpp-ftw/xmpp-ftw-buddycloud/issues"
   },
   "dependencies": {
-    "ltx": "~0.3.3",
+    "ltx": "~0.3.4",
     "xmpp-ftw-item-parser": "~1.0.0",
     "xmpp-ftw-pubsub": "~1.0.0",
     "xmpp-ftw-disco": "~1.0.0",
@@ -42,7 +42,6 @@
   "devDependencies": {
     "mocha": "~1.8.1",
     "should": "~2.0.2",
-    "xmpp-ftw": "~1.0.1",
     "grunt-mocha-cli": "~1.4.0",
     "grunt": "~0.4.2",
     "grunt-contrib-jshint": "~0.7.2"
