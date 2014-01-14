@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "ltx": "~0.3.3",
-    "xmpp-ftw-item-parser": "~0.4.6",
+    "xmpp-ftw-item-parser": "~1.0.0",
     "xmpp-ftw-pubsub": "~1.0.0",
     "xmpp-ftw-disco": "~1.0.0",
     "async": "~0.2.9",
