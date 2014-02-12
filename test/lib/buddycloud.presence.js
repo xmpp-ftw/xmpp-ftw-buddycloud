@@ -64,7 +64,7 @@ describe('buddycloud', function() {
                 stanza.attrs.to.should.equal(buddycloud.channelServer)
                 stanza.getChildText('status').should.equal('buddycloud')
                 stanza.getChildText('priority').should.equal('-1')
-                stanza.getChildText('show').should.equal('online')
+                stanza.getChildText('show').should.equal('chat')
                 done()
             })
             socket.send('xmpp.buddycloud.presence')
