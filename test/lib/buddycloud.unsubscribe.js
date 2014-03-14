@@ -28,6 +28,12 @@ describe('Unsubscribe', function() {
                     error: function() {},
                     warn: function() {}
                 }
+            },
+            getJidType: function(type) {
+                if ('bare' === type) {
+                    return 'juliet@capulet.lit'
+                }
+                throw new Error('Unknown JID type')
             }
         }
         buddycloud = new Buddycloud()
