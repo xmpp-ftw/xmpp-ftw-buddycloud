@@ -27,6 +27,11 @@ describe('buddycloud', function() {
                     error: function() {},
                     warn: function() {}
                 }
+            },
+            getJidType: function(type) {
+                if ('domain' !== type)
+                    throw new Error('Unexpected JID type requested')
+                return 'example.com'
             }
         }
         buddycloud = new Buddycloud()
