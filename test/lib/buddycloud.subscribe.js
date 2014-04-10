@@ -15,6 +15,8 @@ describe('Subscribe', function() {
             socket: socket,
             client: xmpp,
             trackId: function(id, callback) {
+                if (typeof id !== 'object')
+                    throw new Error('Stanza protection ID not added')
                 this.callback = callback
             },
             makeCallback: function(error, data) {
