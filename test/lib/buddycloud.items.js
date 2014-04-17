@@ -187,6 +187,37 @@ describe('buddycloud', function() {
             })
             socket.send('xmpp.buddycloud.items.recent', request, function() {})
         })
+        
+        it('Adds \'parent-only\' attribute if provided', function(done) {
+            var request = {
+                since: new Date().toISOString(),
+                max: '20',
+                parentOnly: true
+            }
+            xmpp.once('stanza', function(stanza) {
+                stanza.getChild('pubsub', buddycloud.NS_PUBSUB)
+                    .getChild('recent-items', buddycloud.NS_BUDDYCLOUD)
+                    .attrs['parent-only']
+                    .should.equal('true')
+                done()
+            })
+            socket.send('xmpp.buddycloud.items.recent', request, function() {})
+        })
+        
+        it('Sets \'parent-only\' to false if not provided', function(done) {
+            var request = {
+                since: new Date().toISOString(),
+                max: '20'
+            }
+            xmpp.once('stanza', function(stanza) {
+                stanza.getChild('pubsub', buddycloud.NS_PUBSUB)
+                    .getChild('recent-items', buddycloud.NS_BUDDYCLOUD)
+                    .attrs['parent-only']
+                    .should.equal('false')
+                done()
+            })
+            socket.send('xmpp.buddycloud.items.recent', request, function() {})
+        })
 
         it('Sends expected stanza with RSM', function(done) {
             var request = {
