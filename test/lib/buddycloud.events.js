@@ -53,18 +53,6 @@ describe('buddycloud', function() {
             ).should.be.false
         })
 
-        it('Doesn\'t handle <iq> packets', function() {
-            buddycloud.handles(
-                new ltx.parse('<iq from="channels.shakespeare.lit" />')
-            ).should.be.false
-        })
-
-        it('Doesn\'t handle <presence> packets', function() {
-            buddycloud.handles(
-                new ltx.parse('<presence from="channels.shakespeare.lit"/>')
-            ).should.be.false
-        })
-
         it('Handles messages with \'event\' namespace', function() {
             var stanza = new ltx.parse(
                 '<message from="channels.shakespeare.lit">' +
@@ -82,15 +70,6 @@ describe('buddycloud', function() {
                 '</value></field></x></message>'
             )
             buddycloud.handles(stanza).should.be.true
-        })
-
-        it('Doesn\'t handle other messages', function() {
-            var stanza = new ltx.parse(
-                '<message from="channels.shakespeare.lit">' +
-                '<event xmlns="' +
-                buddycloud.NS_PUBSUB + '" /></message>'
-            )
-            buddycloud.handles(stanza).should.be.false
         })
 
     })

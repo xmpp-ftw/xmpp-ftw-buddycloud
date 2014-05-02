@@ -1,0 +1,9 @@
+<iq type='get' 
+    from='files.shakespeare.lit' 
+    to='juliet@capulet.com/balcony' 
+    id='ha000'>
+  <confirm xmlns='http://jabber.org/protocol/http-auth'
+           id='a7374jnjlalasdf82'
+           method='GET'
+           url='https://files.shakespeare.lit:9345/missive.html'/>
+</iq>
