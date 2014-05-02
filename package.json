@@ -37,7 +37,8 @@
     "async": "~0.2.9",
     "xmpp-ftw-register": "~1",
     "xmpp-ftw-search": "~1",
-    "xmpp-ftw": "~1"
+    "xmpp-ftw": "~1",
+    "xmpp-ftw-http": "~1"
   },
   "devDependencies": {
     "mocha": "~1.8.1",

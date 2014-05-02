@@ -1,0 +1,11 @@
+<iq type='result'
+    from='media.example.net'
+    to='channels.example.com'
+    id='1'>
+  <query xmlns='http://jabber.org/protocol/disco#info'>
+    <identity
+        category='component'
+        name='Media Server'
+        type='generic' />
+  </query>
+</iq>

@@ -7,5 +7,7 @@
           name='name1'/>
     <item jid='channels.example.com'
           name='name2' />
+    <item jid='media.example.com'
+          name='name3' />
   </query>
 </iq>
