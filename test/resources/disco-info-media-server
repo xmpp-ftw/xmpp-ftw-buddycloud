@@ -1,0 +1,19 @@
+<iq type='result'
+    from='media.example.net'
+    to='channels.example.com'
+    id='1'>
+  <query xmlns='http://jabber.org/protocol/disco#info'>
+    <identity
+        category='component'
+        name='Media Server'
+        type='generic' />
+    <x xmlns='jabber:x:data' type='result'>
+      <field var='FORM_TYPE' type='hidden'>
+        <value>http://buddycloud.org/v1/api</value>
+      </field>
+      <field var='endpoint'>
+        <value>https://api.buddycloud.org</value>
+      </field>
+    </x>
+  </query>
+</iq>

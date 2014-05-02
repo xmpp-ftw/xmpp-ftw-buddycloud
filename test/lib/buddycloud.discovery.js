@@ -119,7 +119,7 @@ describe('buddycloud', function() {
                     stanza.getChild('query', buddycloud.disco.NS_INFO)
                         .should.exist
                     discoInfoRequests++
-                    if (discoInfoRequests >= 2) done()
+                    if (discoInfoRequests >= 3) done()
                 })
                 manager.makeCallback(helper.getStanza('disco-items'))
             })
@@ -158,18 +158,17 @@ describe('buddycloud', function() {
             })
         })
 
-
-        it('Handles disco#info responses; returns failure', function(done) {
+        it('Handles disco#info responses returns server information', function(done) {
             xmpp.once('stanza', function() {
                 var discoInfoRequests = 0
                 xmpp.on('stanza', function() {
                     ++discoInfoRequests
-                    if (1 === discoInfoRequests)
+                    if (2 === discoInfoRequests)
                         return manager.makeCallback(
-                            helper.getStanza('disco-info')
+                            helper.getStanza('disco-info-buddycloud')
                         )
                     manager.makeCallback(
-                        helper.getStanza('disco-info-buddycloud')
+                        helper.getStanza('disco-info')
                     )
                 })
                 manager.makeCallback(helper.getStanza('disco-items'))
@@ -254,6 +253,253 @@ describe('buddycloud', function() {
             buddycloud.channelServer.should.equal('channels.example.com')
             done()
         })
+    })
+    
+    describe('Discover media server', function() {
+
+        var request = { domain: 'example.com' }
+        
+        it('Errors when no callback provided', function(done) {
+            xmpp.once('stanza', function() {
+                done('Unexpected outgoing stanza')
+            })
+            socket.once('xmpp.error.client', function(error) {
+                error.type.should.equal('modify')
+                error.condition.should.equal('client-error')
+                error.description.should.equal('Missing callback')
+                error.request.should.eql({})
+                xmpp.removeAllListeners('stanza')
+                done()
+            })
+            socket.send('xmpp.buddycloud.discover.media-server', {})
+        })
+
+        it('Errors when non-function callback provided', function(done) {
+            xmpp.once('stanza', function() {
+                done('Unexpected outgoing stanza')
+            })
+            socket.once('xmpp.error.client', function(error) {
+                error.type.should.equal('modify')
+                error.condition.should.equal('client-error')
+                error.description.should.equal('Missing callback')
+                error.request.should.eql({})
+                xmpp.removeAllListeners('stanza')
+                done()
+            })
+            socket.send('xmpp.buddycloud.discover.media-server', {}, true)
+        })
+        
+        it('Errors if no \'domain\' key provided', function(done) {
+            socket.send('xmpp.buddycloud.discover.media-server', {}, function(error) {
+                error.type.should.equal('modify')
+                error.condition.should.equal('client-error')
+                error.description.should.equal('Missing \'domain\' key')
+                error.request.should.eql({})
+                done()
+            })
+        })
+
+        it('Sends out expected disco#items stanzas', function(done) {
+            xmpp.once('stanza', function(stanza) {
+                stanza.is('iq').should.be.true
+                stanza.attrs.to.should.equal('example.com')
+                stanza.attrs.type.should.equal('get')
+                stanza.attrs.id.should.exist
+                stanza.getChild('query', buddycloud.disco.NS_ITEMS)
+                    .should.exist
+                done()
+            })
+            socket.send('xmpp.buddycloud.discover.media-server', request, function() {})
+        })
+
+        it('Tracks and can handle an error response', function(done) {
+            xmpp.once('stanza', function(stanza) {
+                var errorResponse = helper.getStanza('iq-error')
+                errorResponse.attrs.id = stanza.attrs.id
+                manager.makeCallback(errorResponse)
+            })
+            socket.send(
+                'xmpp.buddycloud.discover.media-server',
+                request,
+                function(error, items) {
+                    should.not.exist(items)
+                    error.type.should.equal('cancel')
+                    error.condition.should.equal('error-condition')
+                    done()
+                }
+            )
+        })
+
+        it('Handles disco#items and sends expected stanzas', function(done) {
+            xmpp.once('stanza', function() {
+                var discoInfoRequests = 0
+                xmpp.on('stanza', function(stanza) {
+                    stanza.is('iq').should.be.true
+                    stanza.attrs.to.should.include('example.com')
+                    stanza.attrs.type.should.equal('get')
+                    stanza.attrs.id.should.exist
+                    stanza.getChild('query', buddycloud.disco.NS_INFO)
+                        .should.exist
+                    discoInfoRequests++
+                    if (discoInfoRequests >= 3) done()
+                })
+                manager.makeCallback(helper.getStanza('disco-items'))
+            })
+            socket.send('xmpp.buddycloud.discover.media-server', request, function() {})
+        })
+
+        it('Handles error responses; returns failure', function(done) {
+            xmpp.once('stanza', function() {
+                xmpp.on('stanza', function(stanza) {
+                    var errorReply = helper.getStanza('iq-error')
+                    errorReply.attrs.id = stanza.attrs.id
+                    manager.makeCallback(errorReply)
+                })
+                manager.makeCallback(helper.getStanza('disco-items'))
+            })
+            socket.send(
+                'xmpp.buddycloud.discover.media-server',
+                request,
+                function(error, item) {
+                    should.not.exist(item)
+                    error.should.eql({ type: 'cancel', condition: 'item-not-found' })
+                    done()
+                }
+            )
+        })
+
+        it('Handles disco#info responses; returns failure', function(done) {
+            xmpp.once('stanza', function() {
+                xmpp.on('stanza', function(stanza) {
+                    var infoReply = helper.getStanza('disco-info')
+                    infoReply.attrs.id = stanza.attrs.id
+                    manager.makeCallback(infoReply)
+                })
+                manager.makeCallback(helper.getStanza('disco-items'))
+            })
+            socket.send(
+                'xmpp.buddycloud.discover.media-server',
+                request,
+                function(error, item) {
+                    should.not.exist(item)
+                    error.should.eql({ type: 'cancel', condition: 'item-not-found' })
+                    done()
+                }
+            )
+        })
+
+        it('Handles disco#info responses returns server information', function(done) {
+            xmpp.once('stanza', function() {
+                var discoInfoRequests = 0
+                xmpp.on('stanza', function() {
+                    ++discoInfoRequests
+                    if (3 === discoInfoRequests)
+                        return manager.makeCallback(
+                            helper.getStanza('disco-info-media-server-no-endpoint')
+                        )
+                    manager.makeCallback(
+                        helper.getStanza('disco-info')
+                    )
+                })
+                manager.makeCallback(helper.getStanza('disco-items'))
+            })
+            socket.send(
+                'xmpp.buddycloud.discover.media-server',
+                request,
+                function(error, item) {
+                    should.not.exist(error)
+                    item.component.should.equal('media.example.com')
+                    should.not.exist(item.endpoint)
+                    done()
+                }
+            )
+        })
+
+        it('Handles unresponsive components', function(done) {
+            buddycloud.setDiscoveryTimeout(1)
+            xmpp.once('stanza', function() {
+                xmpp.on('stanza', function() {
+                    // ...do nothing...
+                })
+                manager.makeCallback(helper.getStanza('disco-items'))
+            })
+            socket.send(
+                'xmpp.buddycloud.discover.media-server',
+                request,
+                function(error, item) {
+                    should.not.exist(item)
+                    error.should.eql({ type: 'cancel', condition: 'item-not-found' })
+                    done()
+                }
+            )
+        })
+
+        it('Slow component reply doesn\'t callback() twice', function(done) {
+            buddycloud.setDiscoveryTimeout(0)
+            xmpp.on('stanza', function(stanza) {
+                if (-1 !== stanza.toString().indexOf('disco#items')) {
+                    manager.makeCallback(helper.getStanza('disco-items'))
+                    setTimeout(function() {
+                        done()
+                    }, 3)
+                }
+                setTimeout(function() {
+                    manager.makeCallback(helper.getStanza('disco-info'))
+                }, 2)
+            })
+            socket.send(
+                'xmpp.buddycloud.discover.media-server',
+                request,
+                function(error, item) {
+                    should.not.exist(item)
+                    error.should.eql({ type: 'cancel', condition: 'item-not-found' })
+                }
+            )
+        })
+        
+        it('Gets media server with endpoint advertised', function(done) {
+            xmpp.once('stanza', function() {
+                var discoInfoRequests = 0
+                xmpp.on('stanza', function() {
+                    ++discoInfoRequests
+                    if (3 === discoInfoRequests)
+                        return manager.makeCallback(
+                            helper.getStanza('disco-info-media-server')
+                        )
+                    manager.makeCallback(
+                        helper.getStanza('disco-info')
+                    )
+                })
+                manager.makeCallback(helper.getStanza('disco-items'))
+            })
+            socket.send(
+                'xmpp.buddycloud.discover.media-server',
+                request,
+                function(error, item) {
+                    should.not.exist(error)
+                    item.component.should.equal('media.example.com')
+                    item.endpoint.should.equal('https://api.buddycloud.org')
+                    done()
+                }
+            )
+        })
+        
+        it('Doesn\'t perform discovery again for discovered domain', function(done) {
+            xmpp.on('stanza', function() {
+                done('Unexpected stanza sent')
+            })
+            buddycloud.mediaServers[request.domain] = { component: 'success!' }
+            socket.send(
+                'xmpp.buddycloud.discover.media-server',
+                request,
+                function(error, item) {
+                    should.not.exist(error)
+                    item.component.should.equal('success!')
+                    done()
+                }
+            )
+        })
+        
     })
 
 })
