@@ -83,7 +83,7 @@ describe('HTTP Request', function() {
                 should.not.exist(error)
                 success.should.be.true
             }
-            socket.send('xmpp.buddycloud.http.approve', request, callback)
+            socket.send('xmpp.buddycloud.http.confirm', request, callback)
         })
         
         it('Allows a user to deny their request', function(done) {
