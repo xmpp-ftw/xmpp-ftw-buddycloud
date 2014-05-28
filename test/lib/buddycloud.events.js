@@ -71,6 +71,19 @@ describe('buddycloud', function() {
             )
             buddycloud.handles(stanza).should.be.true
         })
+        
+        it('Should not handle presence errors, issue #21', function() {
+            var stanza = ltx.parse('' +
+                '<presence type="error" to="lloyd.watkin@shakespeare.lit/laptop" ' +
+                    'from="channels.shakespeare.lit" xmlns:stream="http://etherx.jabber.org/streams">' +
+                    '<error type="wait">' +
+                        '<service-unavailable xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>' +
+                        '<text xmlns="urn:ietf:params:xml:ns:xmpp-stanzas">Component unavailable</text>' +
+                    '</error>' +
+                '</presence>'
+            )
+            buddycloud.handles(stanza).should.be.false
+        })
 
     })
 
