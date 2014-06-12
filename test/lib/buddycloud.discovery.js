@@ -257,7 +257,7 @@ describe('buddycloud', function() {
     
     describe('Discover media server', function() {
 
-        var request = { domain: 'example.com' }
+        var request = { of: 'example.com' }
         
         it('Errors when no callback provided', function(done) {
             xmpp.once('stanza', function() {
@@ -289,11 +289,11 @@ describe('buddycloud', function() {
             socket.send('xmpp.buddycloud.discover.media-server', {}, true)
         })
         
-        it('Errors if no \'domain\' key provided', function(done) {
+        it('Errors if no \'of\' key provided', function(done) {
             socket.send('xmpp.buddycloud.discover.media-server', {}, function(error) {
                 error.type.should.equal('modify')
                 error.condition.should.equal('client-error')
-                error.description.should.equal('Missing \'domain\' key')
+                error.description.should.equal('Missing \'of\' key')
                 error.request.should.eql({})
                 done()
             })
@@ -416,7 +416,7 @@ describe('buddycloud', function() {
         })
 
         it('Handles unresponsive components', function(done) {
-            buddycloud.setDiscoveryTimeout(1)
+            buddycloud.setMediaServerDiscoveryTimeout(1)
             xmpp.once('stanza', function() {
                 xmpp.on('stanza', function() {
                     // ...do nothing...
@@ -435,7 +435,7 @@ describe('buddycloud', function() {
         })
 
         it('Slow component reply doesn\'t callback() twice', function(done) {
-            buddycloud.setDiscoveryTimeout(0)
+            buddycloud.setMediaServerDiscoveryTimeout(0)
             xmpp.on('stanza', function(stanza) {
                 if (-1 !== stanza.toString().indexOf('disco#items')) {
                     manager.makeCallback(helper.getStanza('disco-items'))
@@ -488,7 +488,7 @@ describe('buddycloud', function() {
             xmpp.on('stanza', function() {
                 done('Unexpected stanza sent')
             })
-            buddycloud.mediaServers[request.domain] = { component: 'success!' }
+            buddycloud.mediaServers[request.of] = { component: 'success!' }
             socket.send(
                 'xmpp.buddycloud.discover.media-server',
                 request,
