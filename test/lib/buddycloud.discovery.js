@@ -197,7 +197,7 @@ describe('buddycloud', function() {
         })
 
         it('Doesn\'t wait for a single slow component', function(done) {
-            this.timeout(300)
+            this.timeout(202)
             buddycloud.setDiscoveryTimeout(200)
             var counter = 0
             xmpp.on('stanza', function(stanza) {
