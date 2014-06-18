@@ -182,7 +182,7 @@ describe('buddycloud', function() {
         })
 
         it('Handles unresponsive components', function(done) {
-            buddycloud.setDiscoveryTimeout(1)
+            buddycloud.setDiscoveryTimeout(100)
             xmpp.once('stanza', function() {
                 xmpp.on('stanza', function() {
                     // ...do nothing...
@@ -196,18 +196,44 @@ describe('buddycloud', function() {
             })
         })
 
+        it('Doesn\'t wait for a single slow component', function(done) {
+            this.timeout(300)
+            buddycloud.setDiscoveryTimeout(200)
+            var counter = 0
+            xmpp.on('stanza', function(stanza) {
+                if (-1 !== stanza.toString().indexOf('disco#items')) {
+                    return manager.makeCallback(helper.getStanza('disco-items'))
+                }
+                if (0 === counter) {
+                    setTimeout(function() {
+                        manager.makeCallback(helper.getStanza('disco-info'))
+                    }, 350)
+                } else if (1 === counter) {
+                    manager.makeCallback(helper.getStanza('disco-info-buddycloud'))
+                } else if (counter > 1) {
+                    manager.makeCallback(helper.getStanza('disco-info'))
+                }
+                ++counter
+            })
+            socket.send('xmpp.buddycloud.discover', {}, function(error, item) {
+                should.not.exist(error)
+                item.should.equal('channels.example.com')
+                done()
+            })
+        })
+
         it('Slow component reply doesn\'t callback() twice', function(done) {
-            buddycloud.setDiscoveryTimeout(0)
+            buddycloud.setDiscoveryTimeout(100)
             xmpp.on('stanza', function(stanza) {
                 if (-1 !== stanza.toString().indexOf('disco#items')) {
                     manager.makeCallback(helper.getStanza('disco-items'))
                     setTimeout(function() {
                         done()
-                    }, 3)
+                    }, 300)
                 }
                 setTimeout(function() {
                     manager.makeCallback(helper.getStanza('disco-info'))
-                }, 2)
+                }, 200)
             })
             socket.send('xmpp.buddycloud.discover', {}, function(error, item) {
                 should.not.exist(item)
