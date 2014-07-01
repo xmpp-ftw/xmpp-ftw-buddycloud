@@ -4,6 +4,7 @@
         <subscriptions>
             <subscription jid="romeo@example.com" subscription="subscribed" node="/user/romeo@example.com/posts"/>
             <subscription jid="romeo@example.com" subscription="pending" node="/user/juliet@example.net/posts"/>
+            <subscription jid="macbeth@example.com" subscription="invited" node="/user/juliet@example.net/posts" invited-by="witches@coven.shakespeare.lit" />
         </subscriptions>
     </pubsub>
 </iq>
