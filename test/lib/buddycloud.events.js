@@ -287,6 +287,31 @@ describe('buddycloud', function() {
             })
             buddycloud.handle(stanza)
         })
+        
+        it('Passes on subscription invites', function(done) {
+            var stanza = new ltx.parse(
+                '<message from="channels.shakespeare.lit">' +
+                '<event xmlns="' + buddycloud.NS_EVENT + '">' +
+                '<subscription subscription="invited" invited-by="juliet@shakespeare.lit" ' +
+                    'node="/user/twelfth@night.org/posts"  jid="romeo@example.com" />' +
+                '</event></message>'
+            )
+            socket.once('xmpp.buddycloud.push.subscription', function(data) {
+                should.not.exist(data.from)
+                data.node.should.equal('/user/twelfth@night.org/posts')
+                data.subscription.should.equal('invited')
+                data.invitedBy.should.eql({
+                    domain: 'shakespeare.lit',
+                    user: 'juliet'
+                })
+                data.jid.should.eql({
+                    domain: 'example.com',
+                    user: 'romeo'
+                })
+                done()
+            })
+            buddycloud.handle(stanza)
+        })
 
         it('Passes on affiliation change', function(done) {
             var stanza = new ltx.parse(
