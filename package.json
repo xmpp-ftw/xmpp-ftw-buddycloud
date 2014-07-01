@@ -30,7 +30,6 @@
     "url": "https://github.com/xmpp-ftw/xmpp-ftw-buddycloud/issues"
   },
   "dependencies": {
-    "ltx": "~0.3.4",
     "xmpp-ftw-item-parser": "~1",
     "xmpp-ftw-pubsub": "~1",
     "xmpp-ftw-disco": "~1",
@@ -38,7 +37,8 @@
     "xmpp-ftw-register": "~1",
     "xmpp-ftw-search": "~1",
     "xmpp-ftw": "~1",
-    "xmpp-ftw-http": "~1"
+    "xmpp-ftw-http": "~1",
+    "ltx": "^0.5.2"
   },
   "devDependencies": {
     "mocha": "~1.8.1",

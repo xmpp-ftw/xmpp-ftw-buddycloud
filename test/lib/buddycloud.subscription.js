@@ -163,5 +163,36 @@ describe('Buddycloud', function() {
         })
 
     })
+    
+    describe('Invitations', function() {
+        
+        it('Sends expected invitation', function(done) {
+            var request = {
+                node: '/user/twelfth@night.org/posts',
+                jid: 'juliet@shakespeare.lit',
+                subscription: 'invited'
+            }
+            xmpp.once('stanza', function(stanza) {
+                stanza.is('iq').should.be.true
+                stanza.attrs.to.should.equal(buddycloud.channelServer)
+                stanza.attrs.type.should.equal('set')
+                stanza.attrs.id.should.exist
+                stanza.getChild('pubsub', buddycloud.NS_OWNER).should.exist
+                var subscriptions = stanza.getChild('pubsub')
+                    .getChild('subscriptions')
+                subscriptions.should.exist
+                subscriptions.attrs.node.should.equal(request.node)
+
+                var subscription = subscriptions.getChild('subscription')
+                subscription.attrs.jid.should.equal(request.jid)
+                subscription.attrs.subscription
+                    .should.equal(request.subscription)
+
+                done()
+            })
+            socket.send('xmpp.buddycloud.subscription', request, function() {})
+        })
+        
+    })
 
 })
