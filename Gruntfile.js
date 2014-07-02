@@ -18,12 +18,6 @@ module.exports = function(grunt) {
             }
         },
         'mocha_istanbul': {
-            coverage: {
-                src: 'test', // the folder, not the files,
-                options: {
-                    mask: '*.spec.js'
-                }
-            },
             coveralls: {
                 src: 'test/lib',
                 options: {
@@ -38,6 +32,14 @@ module.exports = function(grunt) {
             }
         }
     })
+    
+    grunt.event.on('coverage', function(lcov, done){
+        require('coveralls').handleInput(lcov, function(err) {
+            if (error)
+                return done(error)
+            done()
+        })
+    })
 
     // Load the plugins
     grunt.loadNpmTasks('grunt-contrib-jshint')
@@ -45,8 +47,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-istanbul')
     grunt.loadNpmTasks('grunt-istanbul-coverage')
     grunt.registerTask('coveralls', ['mocha_istanbul:coveralls'])
-    grunt.registerTask('coverage', ['mocha_istanbul:coverage'])
-
     // Configure tasks
     grunt.registerTask('default', ['test'])
     grunt.loadNpmTasks('grunt-mocha-istanbul')
