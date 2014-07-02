@@ -16,14 +16,39 @@ module.exports = function(grunt) {
                 reporter: 'spec',
                 ui: 'tdd'
             }
+        },
+        'mocha_istanbul': {
+            coverage: {
+                src: 'test', // the folder, not the files,
+                options: {
+                    mask: '*.spec.js'
+                }
+            },
+            coveralls: {
+                src: 'test/lib',
+                options: {
+                    coverage: true,
+                    check: {
+                        lines: 90,
+                        statements: 90
+                    },
+                    root: './lib',
+                    reportFormats: ['cobertura', 'lcovonly', 'html']
+                }
+            }
         }
     })
 
     // Load the plugins
     grunt.loadNpmTasks('grunt-contrib-jshint')
     grunt.loadNpmTasks('grunt-mocha-cli')
+    grunt.loadNpmTasks('grunt-istanbul')
+    grunt.loadNpmTasks('grunt-istanbul-coverage')
+    grunt.registerTask('coveralls', ['mocha_istanbul:coveralls'])
+    grunt.registerTask('coverage', ['mocha_istanbul:coverage'])
 
     // Configure tasks
     grunt.registerTask('default', ['test'])
-    grunt.registerTask('test', ['mochacli', 'jshint'])
+    grunt.loadNpmTasks('grunt-mocha-istanbul')
+    grunt.registerTask('test', ['mochacli', 'jshint', 'coveralls'])
 }
