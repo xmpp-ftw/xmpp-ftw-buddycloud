@@ -418,5 +418,23 @@ describe('buddycloud', function() {
         })
 
     })
+    
+    describe('Issues', function() {
+      
+        it('https://github.com/xmpp-ftw/xmpp-ftw-buddycloud/issues/25', function() {
+            var stanza = ltx.parse('' +
+                '<message from="channels.surevine.net"  ' +
+                     'to="lloyd.watkin@surevine.net/6daf60a8-eb12-4b18-b1fe-d93d64eadab0">' +
+                    '<event xmlns="http://jabber.org/protocol/pubsub#event">' +
+                         '<subscription node="/user/invites@surevine.net/posts" ' +
+                            'jid="user@surevine.com" subscription="invited"/>' +
+                    '</event>' +
+                '</message>'
+            )
+            buddycloud.channelServer = 'channels.surevine.net'
+            buddycloud.handles(stanza).should.be.true
+        })
+        
+    })
 
 })
