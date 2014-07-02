@@ -34,7 +34,7 @@ module.exports = function(grunt) {
     })
     
     grunt.event.on('coverage', function(lcov, done){
-        require('coveralls').handleInput(lcov, function(err) {
+        require('coveralls').handleInput(lcov, function(error) {
             if (error)
                 return done(error)
             done()
