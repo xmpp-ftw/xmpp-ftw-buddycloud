@@ -421,18 +421,35 @@ describe('buddycloud', function() {
     
     describe('Issues', function() {
       
-        it('https://github.com/xmpp-ftw/xmpp-ftw-buddycloud/issues/25', function() {
+        it('https://github.com/xmpp-ftw/xmpp-ftw-buddycloud/issues/25', function(done) {
             var stanza = ltx.parse('' +
                 '<message from="channels.surevine.net"  ' +
                      'to="lloyd.watkin@surevine.net/6daf60a8-eb12-4b18-b1fe-d93d64eadab0">' +
                     '<event xmlns="http://jabber.org/protocol/pubsub#event">' +
                          '<subscription node="/user/invites@surevine.net/posts" ' +
-                            'jid="user@surevine.com" subscription="invited"/>' +
+                            'jid="user@surevine.com" subscription="invited" ' +
+                            'invited-by="lloyd.watkin@surevine.net" />' +
                     '</event>' +
                 '</message>'
             )
+            socket.once('xmpp.buddycloud.push.subscription', function(data) {
+                should.not.exist(data.from)
+                data.node.should.equal('/user/invites@surevine.net/posts')
+                data.subscription.should.equal('invited')
+                data.invitedBy.should.eql({
+                    domain: 'surevine.net',
+                    user: 'lloyd.watkin'
+                })
+                data.jid.should.eql({
+                    domain: 'surevine.com',
+                    user: 'user'
+                })
+                done()
+            })
             buddycloud.channelServer = 'channels.surevine.net'
             buddycloud.handles(stanza).should.be.true
+            buddycloud.handle(stanza).should.be.true
+            
         })
         
     })
