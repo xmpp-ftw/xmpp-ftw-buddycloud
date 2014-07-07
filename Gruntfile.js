@@ -22,12 +22,13 @@ module.exports = function(grunt) {
                 src: 'test/lib',
                 options: {
                     coverage: true,
+                    legend: true,
                     check: {
                         lines: 90,
                         statements: 90
                     },
                     root: './lib',
-                    reportFormats: ['cobertura', 'lcovonly', 'html']
+                    reportFormats: ['lcov']
                 }
             }
         }
