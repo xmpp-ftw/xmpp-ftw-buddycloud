@@ -120,6 +120,202 @@ describe('buddycloud', function() {
 
     })
 
+    describe('User Feed', function() {
+
+        it('Errors if buddycloud server not discovered', function(done) {
+            delete buddycloud.channelServer
+            var callback = function(error, data) {
+                should.not.exist(data)
+                error.should.eql({
+                    type: 'modify',
+                    condition: 'client-error',
+                    description: 'You must perform discovery first!',
+                    request: {}
+                })
+                done()
+            }
+            socket.send('xmpp.buddycloud.items.feed', {}, callback)
+        })
+
+        it('Sends expected stanza', function(done) {
+            xmpp.once('stanza', function(stanza) {
+                stanza.is('iq').should.be.true
+                stanza.attrs.to.should.equal(buddycloud.channelServer)
+                stanza.attrs.id.should.exist
+                var pubsub = stanza.getChild('pubsub', buddycloud.NS_PUBSUB)
+                pubsub.should.exist
+                var userItems = pubsub
+                    .getChild('user-items', buddycloud.NS_BUDDYCLOUD)
+                userItems.should.exist
+                userItems.attrs.since.should.startWith('2000-01-01T')
+                done()
+            })
+            socket.send('xmpp.buddycloud.items.feed', {}, function() {})
+        })
+
+        it('Errors when date is unparsable', function(done) {
+            var request = {
+                since: 'not a date at all'
+            }
+            var callback = function(error, data) {
+                should.not.exist(data)
+                error.should.eql({
+                    type: 'modify',
+                    condition: 'client-error',
+                    description: buddycloud.ERROR_SINCE_DATE_UNPARSABLE,
+                    request: request
+                })
+                done()
+            }
+            socket.send('xmpp.buddycloud.items.feed', request, callback)
+        })
+
+        it('Sends expected stanza with parameters set', function(done) {
+            var request = {
+                since: new Date().toISOString()
+            }
+            xmpp.once('stanza', function(stanza) {
+                var userItems = stanza
+                    .getChild('pubsub', buddycloud.NS_PUBSUB)
+                    .getChild('user-items', buddycloud.NS_BUDDYCLOUD)
+                userItems.attrs.since.should.equal(request.since)
+                done()
+            })
+            socket.send('xmpp.buddycloud.items.feed', request, function() {})
+        })
+        
+        it('Adds \'parent-only\' attribute if provided', function(done) {
+            var request = {
+                since: new Date().toISOString(),
+                parentOnly: true
+            }
+            xmpp.once('stanza', function(stanza) {
+                stanza.getChild('pubsub', buddycloud.NS_PUBSUB)
+                    .getChild('user-items', buddycloud.NS_BUDDYCLOUD)
+                    .attrs['parent-only']
+                    .should.equal('true')
+                done()
+            })
+            socket.send('xmpp.buddycloud.items.feed', request, function() {})
+        })
+        
+        it('Sets \'parent-only\' to false if not provided', function(done) {
+            var request = {
+                since: new Date().toISOString()
+            }
+            xmpp.once('stanza', function(stanza) {
+                stanza.getChild('pubsub', buddycloud.NS_PUBSUB)
+                    .getChild('user-items', buddycloud.NS_BUDDYCLOUD)
+                    .attrs['parent-only']
+                    .should.equal('false')
+                done()
+            })
+            socket.send('xmpp.buddycloud.items.feed', request, function() {})
+        })
+
+        it('Sends expected stanza with RSM', function(done) {
+            var request = {
+                rsm: {
+                    max: 30,
+                    after: 'item-12345'
+                }
+            }
+            xmpp.once('stanza', function(stanza) {
+                var set = stanza.getChild('pubsub', buddycloud.NS_PUBSUB)
+                    .getChild('set', RSM_NS)
+                set.should.exist
+                set.getChildText('after').should.equal(request.rsm.after)
+                done()
+            })
+            socket.send('xmpp.buddycloud.items.feed', request, function () {})
+        })
+
+        it('Handles error response', function(done) {
+            xmpp.once('stanza', function() {
+                manager.makeCallback(helper.getStanza('iq-error'))
+            })
+            var callback = function(error, data) {
+                should.not.exist(data)
+                error.should.eql({
+                    type: 'cancel',
+                    condition: 'error-condition'
+                })
+                done()
+            }
+            socket.send('xmpp.buddycloud.items.feed', {}, callback)
+        })
+
+        it('Sends back expected data', function(done) {
+            xmpp.once('stanza', function() {
+                manager.makeCallback(helper.getStanza('user-items'))
+            })
+            var callback = function(error, data) {
+                should.not.exist(error)
+                data.length.should.equal(3)
+                data[0].node.should.equal('/user/romeo@example.com/posts')
+                data[1].node.should.equal('/user/romeo@example.com/posts')
+                data[2].node.should.equal('/user/juliet@example.net/posts')
+
+                data[0].id.should.equal('item-1')
+                data[1].id.should.equal('item-2')
+                data[2].id.should.equal('item-3')
+
+                data[0].entry.should.eql({ body: 'item-1-content' })
+                data[1].entry.should.eql({ body: 'item-2-content' })
+                data[2].entry.should.eql({ body: 'item-3-content' })
+                done()
+            }
+            socket.send('xmpp.buddycloud.items.feed', {}, callback)
+        })
+
+        it('Sends back RSM element', function(done) {
+            xmpp.once('stanza', function() {
+                manager.makeCallback(helper.getStanza('user-items-rsm'))
+            })
+            var callback = function(error, data, rsm) {
+                should.not.exist(error)
+                rsm.should.eql({
+                    count: 200,
+                    first: 'item-1',
+                    last: 'item-201'
+                })
+                done()
+            }
+            socket.send('xmpp.buddycloud.items.feed', {}, callback)
+        })
+
+        it('Errors when no callback provided', function(done) {
+            xmpp.once('stanza', function() {
+                done('Unexpected outgoing stanza')
+            })
+            socket.once('xmpp.error.client', function(error) {
+                error.type.should.equal('modify')
+                error.condition.should.equal('client-error')
+                error.description.should.equal('Missing callback')
+                error.request.should.eql({})
+                xmpp.removeAllListeners('stanza')
+                done()
+            })
+            socket.send('xmpp.buddycloud.items.feed', {})
+        })
+
+        it('Errors when non-function callback provided', function(done) {
+            xmpp.once('stanza', function() {
+                done('Unexpected outgoing stanza')
+            })
+            socket.once('xmpp.error.client', function(error) {
+                error.type.should.equal('modify')
+                error.condition.should.equal('client-error')
+                error.description.should.equal('Missing callback')
+                error.request.should.eql({})
+                xmpp.removeAllListeners('stanza')
+                done()
+            })
+            socket.send('xmpp.buddycloud.items.feed', {}, true)
+        })
+
+    })
+    
     describe('Recent items', function() {
 
         it('Errors if buddycloud server not discovered', function(done) {
