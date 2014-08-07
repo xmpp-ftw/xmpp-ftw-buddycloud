@@ -8,3 +8,4 @@ examples/public/google*
 *~
 *.swp
 .DS_Store
+coverage
