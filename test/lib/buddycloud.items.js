@@ -164,7 +164,7 @@ describe('buddycloud', function() {
                 error.should.eql({
                     type: 'modify',
                     condition: 'client-error',
-                    description: 'Recent date was unparsable',
+                    description: buddycloud.ERROR_SINCE_DATE_UNPARSABLE,
                     request: request
                 })
                 done()
