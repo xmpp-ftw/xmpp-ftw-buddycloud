@@ -18,7 +18,7 @@ See the XMPP-FTW demo repository - https://github.com/xmpp-ftw/xmpp-ftw-demo
 
 [![Build Status](https://secure.travis-ci.org/xmpp-ftw/xmpp-ftw-buddycloud.svg)](http://travis-ci.org/xmpp-ftw/xmpp-ftw-buddycloud)
 [![Dependency Status](https://david-dm.org/xmpp-ftw/xmpp-ftw-buddycloud.png)](https://david-dm.org/xmpp-ftw/xmpp-ftw-buddycloud)
-[![Coverage Status](https://coveralls.io/repos/xmpp-ftw/xmpp-ftw-buddycloud/badge.png?branch=master)](https://coveralls.io/r/xmpp-ftw/xmpp-ftw-buddycloud?branch=master)
+[![Coverage Status](https://coveralls.io/repos/xmpp-ftw/xmpp-ftw-buddycloud/badge.svg?branch=master)](https://coveralls.io/r/xmpp-ftw/xmpp-ftw-buddycloud?branch=master)
 
 # Install
 
