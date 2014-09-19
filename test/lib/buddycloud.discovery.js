@@ -38,13 +38,12 @@ describe('buddycloud', function() {
                 return 'example.com'
             }
         }
-        buddycloud = new Buddycloud()
-        buddycloud.init(manager)
     })
 
     beforeEach(function() {
         socket.removeAllListeners()
         xmpp.removeAllListeners()
+        buddycloud = new Buddycloud()
         buddycloud.init(manager)
         buddycloud.channelServer = 'channels.example.com'
     })
@@ -239,6 +238,105 @@ describe('buddycloud', function() {
                 should.not.exist(item)
                 error.should.equal('No buddycloud server found')
             })
+        })
+        
+        describe('Cache', function() {
+        
+            it('Caches discovery if available', function(done) {
+                var cache = {}
+                buddycloud.setCache(cache)
+                xmpp.once('stanza', function() {
+                    var discoInfoRequests = 0
+                    xmpp.on('stanza', function() {
+                        ++discoInfoRequests
+                        if (2 === discoInfoRequests)
+                            return manager.makeCallback(
+                                helper.getStanza('disco-info-buddycloud')
+                            )
+                        manager.makeCallback(
+                            helper.getStanza('disco-info')
+                        )
+                    })
+                    manager.makeCallback(helper.getStanza('disco-items'))
+                })
+                socket.send('xmpp.buddycloud.discover', {}, function() {
+                    cache.buddycloud.server.channel['example.com']
+                        .should.equal('channels.example.com')
+                    done()
+                })
+            })
+            
+            it('Does not perform discovery again if cached', function(done) {
+                var cache = {}
+                buddycloud.setCache(cache)
+                xmpp.once('stanza', function() {
+                    var discoInfoRequests = 0
+                    xmpp.on('stanza', function() {
+                        ++discoInfoRequests
+                        if (2 === discoInfoRequests) {
+                            return manager.makeCallback(
+                                helper.getStanza('disco-info-buddycloud')
+                            )
+                        }
+                        manager.makeCallback(
+                            helper.getStanza('disco-info')
+                        )
+                    })
+                    manager.makeCallback(helper.getStanza('disco-items'))
+                })
+                socket.send('xmpp.buddycloud.discover', {}, function(error, item) {
+                    item.should.equal('channels.example.com')
+                    cache.buddycloud.server.channel['example.com']
+                        .should.equal('channels.example.com')
+                    socket.on('stanza', function() {
+                        done('Should not have performed DISCO again')
+                    })
+                    socket.send('xmpp.buddycloud.discover', {}, function(error, item) {
+                        item.should.equal('channels.example.com')
+                        done()
+                    })
+                })
+            })
+            
+            it('Performs discovery again if caching not available', function(done) {
+                buddycloud.setCache(null)
+                xmpp.once('stanza', function() {
+                    var requests = 0
+                    xmpp.on('stanza', function() {
+                        ++requests
+                        if (2 === requests) {
+                            return manager.makeCallback(
+                                helper.getStanza('disco-info-buddycloud')
+                            )
+                        }
+                        /* We complete the test here */
+                        if (3 === requests) {
+                            done()
+                            return
+                        }
+                        manager.makeCallback(
+                            helper.getStanza('disco-info')
+                        )
+                    })
+                    manager.makeCallback(helper.getStanza('disco-items'))
+                })
+                socket.send('xmpp.buddycloud.discover', {}, function(error, item) {
+                    item.should.equal('channels.example.com')
+                    socket.send('xmpp.buddycloud.discover', {}, function() {
+                        done('Should not have had a cache to return from')
+                    })
+                })
+            })
+            
+            it('Does not cache if domain is supplied', function(done) {
+                var cache = {}
+                buddycloud.setCache(cache)
+                socket.send('xmpp.buddycloud.discover', { server: 'channels.example.com' }, function() {
+                    should.not.exist(cache.buddycloud)
+                    done()
+                })
+            })
+            
         })
 
     })
@@ -509,22 +607,116 @@ describe('buddycloud', function() {
                 }
             )
         })
+ 
+        describe('Cache', function() {
         
-        it('Doesn\'t perform discovery again for discovered domain', function(done) {
-            xmpp.on('stanza', function() {
-                done('Unexpected stanza sent')
-            })
-            buddycloud.mediaServers[request.of] = { component: 'success!' }
-            socket.send(
-                'xmpp.buddycloud.discover.media-server',
-                request,
-                function(error, item) {
-                    should.not.exist(error)
-                    item.component.should.equal('success!')
+            it('Caches discovery if available', function(done) {
+                var cache = {}
+                buddycloud.setCache(cache)
+                xmpp.once('stanza', function() {
+                    var discoInfoRequests = 0
+                    xmpp.on('stanza', function() {
+                        ++discoInfoRequests
+                        if (3 === discoInfoRequests) {
+                            return manager.makeCallback(
+                                helper.getStanza('disco-info-media-server')
+                            )
+                        }
+                        manager.makeCallback(
+                            helper.getStanza('disco-info')
+                        )
+                    })
+                    manager.makeCallback(helper.getStanza('disco-items'))
+                })
+                socket.send('xmpp.buddycloud.discover.media-server', { of: 'example.com' }, function() {
+                    cache.buddycloud.server.media['example.com']
+                        .should.eql({
+                            component: 'media.example.com',
+                            endpoint: 'https://api.buddycloud.org'
+                        })
                     done()
-                }
-            )
+                })
+            })
+            
+            it('Does not perform discovery again if cached', function(done) {
+                var cache = {}
+                buddycloud.setCache(cache)
+                xmpp.once('stanza', function() {
+                    var discoInfoRequests = 0
+                    xmpp.on('stanza', function() {
+                        ++discoInfoRequests
+                        if (2 === discoInfoRequests) {
+                            return manager.makeCallback(
+                                helper.getStanza('disco-info-media-server')
+                            )
+                        }
+                        manager.makeCallback(
+                            helper.getStanza('disco-info')
+                        )
+                    })
+                    manager.makeCallback(helper.getStanza('disco-items'))
+                })
+                var request = { of: 'example.com' }
+                var event = 'xmpp.buddycloud.discover.media-server'
+                socket.send(event, request, function(error, item) {
+                    item.should.eql({
+                        component: 'channels.example.com',
+                        endpoint: 'https://api.buddycloud.org'
+                    })
+                    cache.buddycloud.server.media['example.com']
+                        .should.eql({
+                            component: 'channels.example.com',
+                            endpoint: 'https://api.buddycloud.org'
+                        })
+                    socket.on('stanza', function() {
+                        done('Should not have performed DISCO again')
+                    })
+                    socket.send(event, request, function(error, item) {
+                        item.should.eql({
+                            component: 'channels.example.com',
+                            endpoint: 'https://api.buddycloud.org'
+                        })
+                        done()
+                    })
+                })
+            })
+            
+            it('Performs discovery again if caching not available', function(done) {
+                buddycloud.setCache(null)
+                xmpp.once('stanza', function() {
+                    var requests = 0
+                    xmpp.on('stanza', function() {
+                        ++requests
+                        if (2 === requests) {
+                            return manager.makeCallback(
+                                helper.getStanza('disco-info-media-server')
+                            )
+                        }
+                        /* We complete the test here */
+                        if (3 === requests) {
+                            done()
+                            return
+                        }
+                        manager.makeCallback(
+                            helper.getStanza('disco-info')
+                        )
+                    })
+                    manager.makeCallback(helper.getStanza('disco-items'))
+                })
+                socket.send('xmpp.buddycloud.discover.media-server', { of: 'example.com' }, function(error, item) {
+                    item.should.eql({
+                        component: 'channels.example.com',
+                        endpoint: 'https://api.buddycloud.org'
+                    })
+                    buddycloud.mediaServers['example.com'] = null
+                    socket.send('xmpp.buddycloud.discover', {}, function() {
+                        done('Should not have had a cache to return from')
+                    })
+                })
+            })
+            
         })
+
         
     })
 
