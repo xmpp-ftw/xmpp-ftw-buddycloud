@@ -262,6 +262,7 @@ describe('buddycloud', function() {
                 socket.send('xmpp.buddycloud.discover', {}, function() {
                     cache.buddycloud.server.channel['example.com']
                         .should.equal('channels.example.com')
+                    buddycloud.channelServer = 'channels.example.com'
                     done()
                 })
             })
@@ -629,11 +630,13 @@ describe('buddycloud', function() {
                     manager.makeCallback(helper.getStanza('disco-items'))
                 })
                 socket.send('xmpp.buddycloud.discover.media-server', { of: 'example.com' }, function() {
+                    var expected = {
+                        component: 'media.example.com',
+                        endpoint: 'https://api.buddycloud.org'
+                    }
+                    buddycloud.mediaServers['example.com'].should.eql(expected)
                     cache.buddycloud.server.media['example.com']
-                        .should.eql({
-                            component: 'media.example.com',
-                            endpoint: 'https://api.buddycloud.org'
-                        })
+                        .should.eql(expected)
                     done()
                 })
             })
