@@ -404,4 +404,126 @@ describe('buddycloud', function() {
 
     })
 
+    describe('Delete', function() {
+
+        it('Errors when no callback provided', function(done) {
+            xmpp.once('stanza', function() {
+                done('Unexpected outgoing stanza')
+            })
+            socket.once('xmpp.error.client', function(error) {
+                error.type.should.equal('modify')
+                error.condition.should.equal('client-error')
+                error.description.should.equal('Missing callback')
+                error.request.should.eql({})
+                xmpp.removeAllListeners('stanza')
+                done()
+            })
+            socket.send('xmpp.buddycloud.delete', {})
+        })
+
+        it('Errors when non-function callback provided', function(done) {
+            xmpp.once('stanza', function() {
+                done('Unexpected outgoing stanza')
+            })
+            socket.once('xmpp.error.client', function(error) {
+                error.type.should.equal('modify')
+                error.condition.should.equal('client-error')
+                error.description.should.equal('Missing callback')
+                error.request.should.eql({})
+                xmpp.removeAllListeners('stanza')
+                done()
+            })
+            socket.send('xmpp.buddycloud.delete', {}, true)
+        })
+
+        it('Errors if buddycloud server not discovered', function(done) {
+            delete buddycloud.channelServer
+            var callback = function(error, data) {
+                should.not.exist(data)
+                error.should.eql({
+                    type: 'modify',
+                    condition: 'client-error',
+                    description: 'You must perform discovery first!',
+                    request: {}
+                })
+                done()
+            }
+            socket.send('xmpp.buddycloud.delete', {}, callback)
+        })
+
+        it('Errors if no \'node\' provided', function(done) {
+            var request = {}
+            xmpp.once('stanza', function() {
+                done('Unexpected outgoing stanza')
+            })
+            var callback = function(error, success) {
+                should.not.exist(success)
+                error.type.should.equal('modify')
+                error.condition.should.equal('client-error')
+                error.description.should.equal('Missing \'node\' key')
+                error.request.should.eql(request)
+                xmpp.removeAllListeners('stanza')
+                done()
+            }
+            socket.send(
+                'xmpp.buddycloud.delete',
+                request,
+                callback
+            )
+        })
+
+        it('Sends the expected stanza', function(done) {
+            var request = { node: '/user/romeo@example.com/posts' }
+            xmpp.once('stanza', function(stanza) {
+                stanza.is('iq').should.be.true
+                stanza.attrs.type.should.equal('set')
+                stanza.attrs.to.should.equal(request.to)
+                should.exist(stanza.attrs.id)
+                stanza.getChild('pubsub', buddycloud.NS_PUBSUB).should.exist
+                var deleteElement = stanza.getChild('pubsub').getChild('delete')
+                deleteElement.attrs.node.should.equal(request.node)
+                done()
+            })
+            socket.send('xmpp.buddycloud.delete', request, function() {})
+        })
+
+        it('Can handle error response from server', function(done) {
+            xmpp.once('stanza', function() {
+                    manager.makeCallback(helper.getStanza('iq-error'))
+                })
+
+            var callback = function(error, success) {
+                should.not.exist(success)
+                error.should.eql({
+                    type: 'cancel',
+                    condition: 'error-condition'
+                })
+                done()
+            }
+            socket.send(
+                'xmpp.buddycloud.delete',
+                { node: '/user/romeo@example.com/posts' },
+                callback
+            )
+        })
+        
+        it('Can handles success response from the server', function(done) {
+            xmpp.once('stanza', function() {
+                    manager.makeCallback(helper.getStanza('iq-result'))
+                })
+
+            var callback = function(error, success) {
+                should.not.exist(error)
+                success.should.be.true
+                done()
+            }
+            socket.send(
+                'xmpp.buddycloud.delete',
+                { node: '/user/romeo@example.com/posts' },
+                callback
+            )
+        })
+
+    })
+    
 })

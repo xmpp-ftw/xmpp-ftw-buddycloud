@@ -248,6 +248,22 @@ describe('buddycloud', function() {
             })
             socket.send('xmpp.buddycloud.affiliation', request, function() {})
         })
+        
+        
+        it('Allows me to request ephemeral only nodes', function(done) {
+            xmpp.once('stanza', function(stanza) {
+                var subscriptions = stanza.getChild('pubsub').getChild('affiliations')
+                subscriptions.should.exist
+                subscriptions.attr('bc:ephemeral').should.equal('true')
+                done()
+            })
+            var request = { ephemeral: true }
+            socket.send(
+                'xmpp.buddycloud.affiliations',
+                request,
+                function() {}
+            )
+        })
 
     })
 })

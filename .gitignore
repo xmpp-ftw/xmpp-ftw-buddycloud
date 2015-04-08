@@ -7,3 +7,5 @@ examples/public/google*
 *.geany
 *~
 *.swp
+.DS_Store
+coverage

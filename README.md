@@ -14,9 +14,11 @@ Manual page is available here: [buddycloud for XMPP-FTW](https://xmpp-ftw.jit.su
 
 See the XMPP-FTW demo repository - https://github.com/xmpp-ftw/xmpp-ftw-demo
 
-# Build status
+# Badges
 
-[![Build Status](https://secure.travis-ci.org/xmpp-ftw/xmpp-ftw-buddycloud.png)](http://travis-ci.org/xmpp-ftw/xmpp-ftw-buddycloud)
+[![Build Status](https://secure.travis-ci.org/xmpp-ftw/xmpp-ftw-buddycloud.svg)](http://travis-ci.org/xmpp-ftw/xmpp-ftw-buddycloud)
+[![Dependency Status](https://david-dm.org/xmpp-ftw/xmpp-ftw-buddycloud.png)](https://david-dm.org/xmpp-ftw/xmpp-ftw-buddycloud)
+[![Coverage Status](https://img.shields.io/coveralls/xmpp-ftw/xmpp-ftw-buddycloud.svg)](https://coveralls.io/r/xmpp-ftw/xmpp-ftw-buddycloud?branch=master)
 
 # Install
 
@@ -29,7 +31,3 @@ npm i --save xmpp-ftw-buddycloud
 ```
 npm test
 ```
-
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/xmpp-ftw/xmpp-ftw-buddycloud/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-
