@@ -22,8 +22,12 @@ module.exports = function(grunt) {
     // Load the plugins
     grunt.loadNpmTasks('grunt-contrib-jshint')
     grunt.loadNpmTasks('grunt-mocha-cli')
+    
+    grunt.registerTask('setTimeZone', 'Set GMT timezone', function() {
+      process.env.TZ = 'Europe/London' 
+    })
 
     // Configure tasks
     grunt.registerTask('default', ['test'])
-    grunt.registerTask('test', ['mochacli', 'jshint'])
+    grunt.registerTask('test', ['setTimeZone', 'mochacli', 'jshint'])
 }
