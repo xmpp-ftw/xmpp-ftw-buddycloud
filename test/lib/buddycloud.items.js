@@ -620,6 +620,25 @@ describe('buddycloud', function() {
                 callback
             )
         })
+        
+        it('Can make a request with "parent-only" attribute', function(done) {
+            xmpp.once('stanza', function(stanza) {
+                stanza.getChild('pubsub')
+                    .getChild('items')
+                    .attr('parent-only')
+                    .should.equal('true')
+                done()
+            })
+            var request = {
+                node: '/user/romeo@example.com/post',
+                parentOnly: true
+            }
+            socket.send(
+                'xmpp.buddycloud.retrieve',
+                request,
+                function() {}
+            )
+        })
 
     })
 
