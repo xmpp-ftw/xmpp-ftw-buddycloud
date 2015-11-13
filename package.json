@@ -37,7 +37,7 @@
     "xmpp-ftw-register": "~1",
     "xmpp-ftw-search": "~1",
     "xmpp-ftw": "~1",
-    "xmpp-ftw-http": "~1",
+    "xmpp-ftw-http": "~1.5.0",
     "ltx": "^0.5.2"
   },
   "devDependencies": {
