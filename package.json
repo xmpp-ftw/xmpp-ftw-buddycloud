@@ -46,7 +46,7 @@
     "grunt-mocha-cli": "~1.4.0",
     "grunt": "~0.4.4",
     "grunt-contrib-jshint": "~0.7.2",
-    "grunt-mocha-istanbul": "^1.5.0",
+    "grunt-mocha-istanbul": "^4.0.1",
     "coveralls": "^2.10.1"
   },
   "peerDependencies": {
