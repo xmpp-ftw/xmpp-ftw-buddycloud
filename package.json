@@ -33,7 +33,7 @@
     "xmpp-ftw-item-parser": "~1",
     "xmpp-ftw-pubsub": "~1",
     "xmpp-ftw-disco": "~1",
-    "async": "~0.2.9",
+    "async": "~2.1.0",
     "xmpp-ftw-register": "~1",
     "xmpp-ftw-search": "~1",
     "xmpp-ftw": "~1",
