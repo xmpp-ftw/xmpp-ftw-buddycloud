@@ -38,7 +38,7 @@
     "xmpp-ftw-search": "~1",
     "xmpp-ftw": "~1",
     "xmpp-ftw-http": "~1",
-    "ltx": "^0.5.2"
+    "ltx": "^2.5.1"
   },
   "devDependencies": {
     "mocha": "~1.8.1",
