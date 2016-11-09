@@ -35,7 +35,7 @@
     "xmpp-ftw-disco": "~1",
     "async": "~0.2.9",
     "xmpp-ftw-register": "~1",
-    "xmpp-ftw-search": "~1",
+    "xmpp-ftw-search": "~1.2.0",
     "xmpp-ftw": "~1",
     "xmpp-ftw-http": "~1",
     "ltx": "^0.5.2"
