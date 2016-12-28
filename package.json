@@ -36,7 +36,7 @@
     "async": "~0.2.9",
     "xmpp-ftw-register": "~1",
     "xmpp-ftw-search": "~1",
-    "xmpp-ftw": "~1",
+    "xmpp-ftw": "~2.0.0",
     "xmpp-ftw-http": "~1",
     "ltx": "^0.5.2"
   },
