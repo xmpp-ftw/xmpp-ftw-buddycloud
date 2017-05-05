@@ -1,6 +1,8 @@
 xmpp-ftw-buddycloud
 ====================
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/xmpp-ftw/xmpp-ftw-buddycloud.svg)](https://greenkeeper.io/)
+
 A [buddycloud](http://buddycloud.com) plugin for XMPP-FTW.
 
 https://github.com/xmpp-ftw/xmpp-ftw.git
